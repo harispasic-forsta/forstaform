@@ -5,6 +5,9 @@ import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 
 function form() {
 return (
+
+
+  
 <header className="form">
 <h1 style={{color:'#000'}}>Additional theme options</h1>
 <Container>
@@ -15,6 +18,30 @@ return (
 <Form.Label style={{color:'#000', display:'flex', justifyContent: 'left', marginTop:20}}>
 URL
 </Form.Label>
+
+
+<Row>
+<Col>
+<TextField
+id='url'
+label='URL'
+name='URL'
+className="URL-input-field"
+helperText={ (url.length>0 || skipUrlValidation ) ? "" : 'Rule name field is required'}
+onChange={(newValue) => {
+  setUrl(newValue) 
+  setSkipUrlValidation(false)
+}}
+placeholder='Enter installation URL'
+showClear={true}
+value={url}
+error={(url.length>0 || skipUrlValidation) ? false : true} 
+/>
+</Col>
+</Row>
+
+
+
 <Form.Text className='text-muted' >
 Dapresy server where this should be implemented
 </Form.Text>

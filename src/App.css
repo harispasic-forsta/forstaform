@@ -25,6 +25,96 @@
   text-align: left;
 }
 
+.url {
+display: flex;
+justify-content: left;
+margin-top: 20px;
+}
+
+.urlblock {
+  height:48px;
+  padding: 0%;
+}
+
+.project {
+  display: flex;
+justify-content: left;
+margin-top: 20px;
+}
+
+.projectblock {
+  height:48px;
+  padding: 0%;
+}
+
+.report{
+  display: flex;
+justify-content: left;
+margin-top: 20px;
+}
+.reportblock {
+  height:48px;
+  padding: 0%;
+}
+
+.slide{
+  display: flex;
+justify-content: left;
+margin-top: 20px;
+}
+
+.slideblock {
+  height:48px;
+  padding: 0%;
+}
+
+.subject {
+  display: flex;
+justify-content: left;
+margin-top: 20px;
+}
+
+.subjectblock {
+  height:48px;
+  padding: 0%;
+}
+
+.request {
+  display: flex;
+justify-content: left;
+margin-top: 20px;
+}
+
+.requestblock {
+  height:98px;
+  padding: 0%;
+}
+
+.attachments {
+  display: flex;
+justify-content: left;
+margin-top: 20px;
+}
+
+.attachmentsblock {
+  height: 128px;
+  padding: 0%;
+}
+
+.text-muted {
+display: flex;
+justify-content: left;
+margin-top: 20px;
+}
+
+.uploadButton {
+  justify-content: center;
+}
+
+.btn-submit-wrapper .btn-submit {
+ margin-top: 20px;
+}
+
 
 .App-link {
   color: #61dafb;
