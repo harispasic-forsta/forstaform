@@ -1,11 +1,8 @@
-import firebase from 'firebase/compat/app'
-import "firebase/compat/storage"
-import "firebase/compat/database"
-
+import firebase from 'firebase/app'
+import "firebase/storage"
+import "firebase/database"
 
 const firebaseConfig = {
-    
-
     apiKey: "AIzaSyBcUqVmf4TLj_pYxAPMbOR3YyZcTCmZrTQ",
     authDomain: "forstaform.firebaseapp.com",
     databaseURL: "https://forstaform-default-rtdb.europe-west1.firebasedatabase.app",

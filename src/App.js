@@ -1,10 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Row, Col, Form, FormGroup } from "react-bootstrap";
-import { app } from "./config/firebase";
 import TextField from "@confirmit/react-text-field";
 
+import { initializeApp } from "firebase/app"
+
+import { getFirestore } from "firebase/firestore"
+import { collection, addDoc } from "firebase/firestore"; 
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBcUqVmf4TLj_pYxAPMbOR3YyZcTCmZrTQ",
+  authDomain: "forstaform.firebaseapp.com",
+  databaseURL: "https://forstaform-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "forstaform",
+  storageBucket: "forstaform.appspot.com",
+  messagingSenderId: "873517026551",
+  appId: "1:873517026551:web:b526b754d3f3e2bf81d7f2",
+  measurementId: "G-SY6ER4E30B"
+};
+const app = initializeApp(firebaseConfig);
 
 function App() {
   const [url, setUrl] = useState("");
@@ -62,7 +77,31 @@ function App() {
       submitButton.disabled = true;
     } 
   })*/
- 
+
+  async function submitFormData() {
+    console.log('TO DO , validacija podataka. Da nisu prazni?');
+
+    //if(validationFailed) return neka error poruka
+
+    try {
+      let orderData = {
+        Attachmments:'aaapoad1201023123',
+        Project:project,
+        Report:'Report ID or name',
+        Request:'Lorem ipsum',
+        Slide:'5',
+        Subject:'Please add this CC to someting',
+        URL:'www.google.com',
+      }
+      
+      const db = getFirestore();
+      const responseData = await addDoc(collection(db, "Orders"), orderData );
+      console.log("Document written with ID: ", responseData.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
+
   return (
     <header className="App">
       <h1 className="title">Additional theme options</h1>
@@ -234,7 +273,7 @@ function App() {
           </Col>
         </Row>
         <div className="btn-submit-wrapper">
-          <button className="btn btn-primary btn-sx btn-submit" onClick={Push} id="submit" >
+          <button className="btn btn-primary btn-sx btn-submit" onClick={submitFormData} id="submit" >
             Submit
           </button>
         </div>
