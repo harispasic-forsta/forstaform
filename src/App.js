@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Row, Col, Form, FormGroup } from "react-bootstrap";
 import { app } from "./config/firebase";
 import TextField from "@confirmit/react-text-field";
+
 
 function App() {
   const [url, setUrl] = useState("");
@@ -19,8 +20,7 @@ function App() {
   /* const [skipAttachmentsValidation, setSkipAttachmentsValidation] = useState(true);*/
 
   
-
-  const Push = () => {
+    const Push = () => {
     uploadFiles()
     app
       .database()
@@ -48,10 +48,21 @@ function App() {
     });
   };
 
-  const onChange = (e) => {
-    setAttachments(Array.from(e.target.files));
-  };
+   const onChange = (e) => {
+    setAttachments(Array.from(e.target.files))
+  }
 
+  /*
+  const submitButton = document.getElementById("submit")
+  const input = document.getElementById("url") 
+  input.addEventListener('keypress', (e) => {
+    const value = e.currentTarget.value;
+    submitButton.disabled = false;
+    if (value === "" ) {
+      submitButton.disabled = true;
+    } 
+  })*/
+ 
   return (
     <header className="App">
       <h1 className="title">Additional theme options</h1>
@@ -70,7 +81,8 @@ function App() {
                 helperText={
                   url.length > 0 || skipUrlValidation ? "" : "URL required"
                 }
-                onChange={(newValue) => {
+                onChange={ 
+                  (newValue) => {
                   setUrl(newValue);
                   setSkipUrlValidation(false);
                 }}
@@ -222,7 +234,7 @@ function App() {
           </Col>
         </Row>
         <div className="btn-submit-wrapper">
-          <button className="btn btn-primary btn-sx btn-submit" onClick={Push}>
+          <button className="btn btn-primary btn-sx btn-submit" onClick={Push} id="submit" >
             Submit
           </button>
         </div>
