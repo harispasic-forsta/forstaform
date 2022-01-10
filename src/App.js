@@ -1,25 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Row, Col, Form, FormGroup } from "react-bootstrap";
 import TextField from "@confirmit/react-text-field";
-
-import { initializeApp } from "firebase/app"
-
-import { getFirestore } from "firebase/firestore"
-import { collection, addDoc } from "firebase/firestore"; 
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBcUqVmf4TLj_pYxAPMbOR3YyZcTCmZrTQ",
-  authDomain: "forstaform.firebaseapp.com",
-  databaseURL: "https://forstaform-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "forstaform",
-  storageBucket: "forstaform.appspot.com",
-  messagingSenderId: "873517026551",
-  appId: "1:873517026551:web:b526b754d3f3e2bf81d7f2",
-  measurementId: "G-SY6ER4E30B"
-};
-const app = initializeApp(firebaseConfig);
+import Select from "@confirmit/react-select";
+import firebase from "./config/firebase";
+import { getFirestore } from "firebase/firestore";
+import { collection, addDoc, getDocs} from "firebase/firestore";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
 
 function App() {
   const [url, setUrl] = useState("");
@@ -28,79 +16,167 @@ function App() {
   const [slide, setSlide] = useState("");
   const [subject, setSubject] = useState("");
   const [request, setRequest] = useState("");
+  const [tagsLabel, setTagsLabel] = useState("");
+  const [tagName, setTagName] = useState("");
+  const [loadAllTagNames, setLoadAllTagNames] = useState([]);
   const [attachments, setAttachments] = useState([]);
+  const [multipleSelectValue, setMultipleSelectValue] = useState([]);
   const [skipUrlValidation, setSkipUrlValidation] = useState(true);
   const [skipSubjectValidation, setSkipSubjectValidation] = useState(true);
   const [skipRequestValidation, setSkipRequestValidation] = useState(true);
-  /* const [skipAttachmentsValidation, setSkipAttachmentsValidation] = useState(true);*/
+  const [skipProjectValidation, setSkipProjectValidation] = useState(true);
+  const [skipTagName, setSkipTagName] = useState(true);
+  const [disableSubmit, setDisableSubmit] = useState(true);
+  const [disableSave, setDisableSave] = useState(true);
+  const [show, setShow] = useState(false);
 
-  
-    const Push = () => {
-    uploadFiles()
-    app
-      .database()
-      .ref()
-      .set({
-        url: url,
-        project: project,
-        report: report,
-        slide: slide,
-        subject: subject,
-        request: request,
-        attachments : "To do add attachments",
-      })
-      .catch(alert);
-  };
-
-  const uploadFiles = (e) => {
-    const storageRef = app.storage().ref()
-   attachments.forEach(element => {
-      const fileRef = storageRef.child(element.name);
-      fileRef.put(element).then((data) => {
-        console.log(data)
-        console.log("To do succes message")
-      });
-    });
-  };
-
-   const onChange = (e) => {
-    setAttachments(Array.from(e.target.files))
+  const storage = getStorage();
+ 
+  async function LoadTagName(){
+    
+    try{
+      let loadData = {
+        LoadAllTagName : loadAllTagNames
+      }
+      let allTags= []
+      const db = getFirestore();
+      const querySnapshot = await getDocs(collection(db, "Tabs"), loadData);
+      querySnapshot.forEach((doc) => {
+        allTags.push(doc.data())
+        console.log(doc.data())
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data())})
+      
+    } catch (e) {
+      console.error("Error loading document: ", e);
+    }
   }
 
-  /*
-  const submitButton = document.getElementById("submit")
-  const input = document.getElementById("url") 
-  input.addEventListener('keypress', (e) => {
-    const value = e.currentTarget.value;
-    submitButton.disabled = false;
-    if (value === "" ) {
-      submitButton.disabled = true;
-    } 
-  })*/
-
-  async function submitFormData() {
-    console.log('TO DO , validacija podataka. Da nisu prazni?');
-
-    //if(validationFailed) return neka error poruka
+  async function SaveNameTag() {
+    console.log();
 
     try {
-      let orderData = {
-        Attachmments:'aaapoad1201023123',
-        Project:project,
-        Report:'Report ID or name',
-        Request:'Lorem ipsum',
-        Slide:'5',
-        Subject:'Please add this CC to someting',
-        URL:'www.google.com',
-      }
-      
+      let tagData = {
+        TagName: tagName,
+      };
+
       const db = getFirestore();
-      const responseData = await addDoc(collection(db, "Orders"), orderData );
+      const responseData = await addDoc(collection(db, "Tags"), tagData);
       console.log("Document written with ID: ", responseData.id);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   }
+
+  const saveTagNames = (e) => {
+    let tagName = [];
+    attachments.forEach((element) => {
+      let uniqueName = parseInt(Math.random() * 100000) + element.name;
+      tagName.push(uniqueName);
+      const storageRef = ref(storage, uniqueName);
+      uploadBytes(storageRef, element).then((snapshot) => {
+        console.log("Upload done");
+        console.log(snapshot);
+      });
+    });
+    SaveNameTag(tagName);
+  };
+
+  async function SaveFormData(fileNames) {
+    console.log(fileNames);
+
+    try {
+      let orderData = {
+        Attachmments: fileNames,
+        Project: project,
+        Report: report,
+        Request: request,
+        Slide: slide,
+        Subject: subject,
+        URL: url,
+        Tags: tagsLabel,
+      };
+
+      const db = getFirestore();
+      const responseData = await addDoc(collection(db, "Orders"), orderData);
+      console.log("Document written with ID: ", responseData.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
+
+  //uploading files to saveformdata with uniquename and id
+  const uploadFiles = (e) => {
+    let fileNames = [];
+    attachments.forEach((element) => {
+      let uniqueName = parseInt(Math.random() * 100000) + element.name;
+      fileNames.push(uniqueName);
+      const storageRef = ref(storage, uniqueName);
+      uploadBytes(storageRef, element).then((snapshot) => {
+        console.log("Upload done");
+        console.log(snapshot);
+      });
+    });
+    SaveFormData(fileNames);
+  };
+
+  const onAttachmentChange = (e) => {
+    setAttachments(Array.from(e.target.files));
+  };
+
+  async function submitFormData() {
+    if (checkRequiredFields()) {
+      console.log("Show error messages");
+    } else {
+      uploadFiles();
+    }
+    //if(validationFailed ()) return neka error poruka
+  }
+  const checkRequiredFields = () => {
+    let hasErrors = true;
+    if (
+      project.length > 0 &&
+      url.length > 0 &&
+      subject.length > 0 &&
+      request.length > 0
+    ) {
+      setDisableSubmit(false);
+      console.log("enableButton");
+      hasErrors = false;
+    } else {
+      setDisableSubmit(true);
+    }
+    return hasErrors;
+  };
+
+  useEffect(() => {
+    checkRequiredFields();
+  }, [project, url, subject, request]);
+
+  async function submitAddedTags() {
+    if (checkAddedTags()) {
+      console.log("Show error messages");
+    } else {
+      saveTagNames();
+    }
+  }
+
+  const checkAddedTags = () => {
+    let hasErrors = true;
+    if (tagName.length > 0) {
+      setDisableSave(false);
+      console.log("enableSave");
+      hasErrors = false;
+    } else {
+      setDisableSave(true);
+    }
+    return hasErrors;
+  };
+
+  useEffect(() => {
+    checkAddedTags();
+  }, [tagName]);
+  
 
   return (
     <header className="App">
@@ -113,15 +189,16 @@ function App() {
                 Dapresy server where this should be implemented
               </Form.Text>
               <TextField
+                type="url"
                 id="url"
                 label="URL"
                 name="URL"
+                required
                 className="URL-input-field"
                 helperText={
-                  url.length > 0 || skipUrlValidation ? "" : "URL required"
+                  url.length > 0 || skipUrlValidation ? "" : "Please enter URL"
                 }
-                onChange={ 
-                  (newValue) => {
+                onChange={(newValue) => {
                   setUrl(newValue);
                   setSkipUrlValidation(false);
                 }}
@@ -141,13 +218,23 @@ function App() {
                 id="project"
                 label="Project"
                 name="Project"
+                required
                 className="Project-input-field"
+                helperText={
+                  project.length > 0 || skipProjectValidation
+                    ? ""
+                    : "Please enter project"
+                }
                 onChange={(newValue) => {
                   setProject(newValue);
+                  setSkipProjectValidation(false);
                 }}
                 placeholder="Enter project name/code/ID"
                 showClear={true}
                 value={project}
+                error={
+                  project.length > 0 || skipProjectValidation ? false : true
+                }
               />
             </Form.Group>
           </Col>
@@ -182,6 +269,8 @@ function App() {
                 id="slide"
                 label="Slide"
                 name="Slide"
+                type="text"
+                min="1"
                 className="Slide-input-field"
                 onChange={(newValue) => {
                   setSlide(newValue);
@@ -203,11 +292,12 @@ function App() {
                 id="subject"
                 label="Subject"
                 name="Subject"
+                required
                 className="Subject-input-field"
                 helperText={
                   subject.length > 0 || skipSubjectValidation
                     ? ""
-                    : "Subject required"
+                    : "Please enter subject"
                 }
                 onChange={(newValue) => {
                   setSubject(newValue);
@@ -234,17 +324,18 @@ function App() {
                 id="request"
                 label="Request"
                 name="Request"
+                required
                 className="Request-input-field"
                 helperText={
                   request.length > 0 || skipRequestValidation
                     ? ""
-                    : "Request required"
+                    : "Please enter request"
                 }
                 onChange={(newValue) => {
                   setRequest(newValue);
                   setSkipRequestValidation(false);
                 }}
-                placeholder="Enter request"
+                placeholder="request"
                 showClear={true}
                 value={request}
                 error={
@@ -256,27 +347,96 @@ function App() {
         </Row>
         <Row>
           <Col>
-            
-              <Form.Group controlId="formAttachments">
-                <Form.Text className="text-muted">
-                  Max 10 files and 10 mb per file
-                </Form.Text>
-                <Form.Control
-                  className="attachmentsblock"
-                  name="file"
-                  type="file"
-                  multiple
-                  onChange={onChange}
-                />
-              </Form.Group>
-            
+            <Form.Group controlId="formAttachments">
+              <Form.Text className="text-muted">
+                Max 10 files and 10 mb per file
+              </Form.Text>
+              <Form.Control
+                className="attachmentsblock"
+                name="file"
+                type="file"
+                multiple
+                onChange={onAttachmentChange}
+              />
+            </Form.Group>
+            <Select
+              value={multipleSelectValue}
+              isMulti={true}
+              isSearchable={true}
+              isClearable={true}
+              label="Tags"
+              className="tags-Label"
+              id="tagLabel"
+              name="tagsLabel"
+              placeholder="Select tag"
+              onChange={(newValue) => {
+                setTagsLabel(newValue);
+                setMultipleSelectValue();
+              }}
+              showClear={true}
+              value={tagsLabel}
+            >
+              <Select.Option value="1">Navbar</Select.Option>
+              <Select.Option value="2">Home</Select.Option>
+              <Select.Option value="3">Sign in</Select.Option>
+              <Select.Option value="4">Register</Select.Option>
+              <Select.Option value="5">Contact</Select.Option>
+              <Select.Option value="6">Services</Select.Option>
+            </Select>
+            {show ? (
+              <TextField
+                id="tagName"
+                label="Tag Name"
+                name="tagName"
+                className="enter-tag-field"
+                helperText={tagName.length > 0 || skipTagName ? "" : ""}
+                onChange={(newValue) => {
+                  setTagName(newValue);
+                  setSkipTagName(false);
+                }}
+                value={tagName}
+                showClear={true}
+              />
+            ) : null}
+            {show ? (
+              <div>
+                <button
+                  type="save"
+                  className="btn btn-primary btn-sx btn-save"
+                  id="saveTag"
+                  onClick={submitAddedTags}
+                  disabled={disableSave}
+                >
+                  Save tag
+                </button>
+              </div>
+            ) : null}
+            <div className="btn-newTag-wapper">
+              <button
+                type="submit"
+                className="btn btn-primary btn-sx btn-add"
+                id="NewTags"
+                onClick={() => setShow(!show)}
+              >
+                + New tag
+              </button>
+            </div>
           </Col>
         </Row>
         <div className="btn-submit-wrapper">
-          <button className="btn btn-primary btn-sx btn-submit" onClick={submitFormData} id="submit" >
+          <button
+            type="submit"
+            className="btn btn-primary btn-sx btn-submit"
+            onClick={submitFormData}
+            id="submit"
+            disabled={disableSubmit}
+          >
             Submit
           </button>
         </div>
+        {submitFormData ? (
+          <div className="success-message">Submitted successfully</div>
+        ) : null}
       </Container>
     </header>
   );
