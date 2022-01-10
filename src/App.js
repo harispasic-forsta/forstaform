@@ -395,6 +395,17 @@ function App() {
               <Select.Option value="5">Contact</Select.Option>
               <Select.Option value="6">Services</Select.Option>
             </Select>
+
+            <Select
+              value={multipleSelectValue}
+              label="Tags"
+              onChange={(newValue) => {
+                console.log('selected tag is : ', newValue);
+              }}>
+              {
+                allTags.map((item) => <Select.Option key={item.TagName} value={item.TagName}>{item.TagName}</Select.Option>)
+              }
+            </Select>
             {show ? (
               <TextField
                 id="tagName"
