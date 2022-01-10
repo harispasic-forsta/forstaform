@@ -32,25 +32,37 @@ function App() {
 
   const storage = getStorage();
  
-  async function LoadTagName(){
-    
+  /* Solution for loading tags Start*/
+  const [allTags, setAllTags] = useState([]);
+
+  useEffect(() => {
+    console.log('useEffect called. Line 39.');
+    loadAllTagsFromDatabase();
+  }, []);
+
+  async function loadAllTagsFromDatabase(){
+    console.log('loadAllTagsFromDatabase function called.')
     try{
-      let loadData = {
-        LoadAllTagName : loadAllTagNames
-      }
-      let allTags= []
+      let allTagsFromDB= []
       const db = getFirestore();
-      const querySnapshot = await getDocs(collection(db, "Tabs"), loadData);
+      console.log('connecting and getting the collection Tags...');
+      const querySnapshot = await getDocs(collection(db, "Tags"));
       querySnapshot.forEach((doc) => {
-        allTags.push(doc.data())
-        console.log(doc.data())
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data())})
-      
+        console.log('tag found in database, adding the tag to list');
+        console.log(doc.data());
+        allTagsFromDB.push(doc.data())
+      })
+
+      console.log('setting the list in our variable allTags');
+      setAllTags(allTagsFromDB)
+
+      console.log('Now allTags has following values : ');
+      console.log(allTagsFromDB);
     } catch (e) {
       console.error("Error loading document: ", e);
     }
   }
+  /* Solution for loading tags End*/
 
   async function SaveNameTag() {
     console.log();
