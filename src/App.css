@@ -104,7 +104,6 @@ margin-top: 20px;
 .text-muted {
 display: flex;
 justify-content: left;
-margin-top: 20px;
 }
 
 .uploadButton {
@@ -118,14 +117,30 @@ margin-top: 20px;
 .success-message {
   font-size: 20px;
   color: green;
-  position: absolute;
+  position: center;
   animation: buttons .3s linear;
 }
 
-.enter-tag-field{
-  height: 48px;
-  padding: 0%;
+.btn-saveTag-wrapper .btn-save {
+  margin-left: 100%;
 }
+
+.tagNameBox {
+ top:20%;
+}
+
+.tagSelectBox {
+ top: 10%;
+  position: relative;
+  border-left: 2px solid #0004ff;
+  background: #cccaca;
+}
+
+.btn-newTag-wrapper .btn-addNewTag{
+  margin-left: 100%;
+
+}
+
 
 .App-link {
   color: #61dafb;

@@ -6,7 +6,7 @@ import TextField from "@confirmit/react-text-field";
 import Select from "@confirmit/react-select";
 import firebase from "./config/firebase";
 import { getFirestore } from "firebase/firestore";
-import { collection, addDoc, getDocs} from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 
 function App() {
@@ -18,7 +18,6 @@ function App() {
   const [request, setRequest] = useState("");
   const [tagsLabel, setTagsLabel] = useState("");
   const [tagName, setTagName] = useState("");
-  const [loadAllTagNames, setLoadAllTagNames] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [multipleSelectValue, setMultipleSelectValue] = useState([]);
   const [skipUrlValidation, setSkipUrlValidation] = useState(true);
@@ -29,34 +28,35 @@ function App() {
   const [disableSubmit, setDisableSubmit] = useState(true);
   const [disableSave, setDisableSave] = useState(true);
   const [show, setShow] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
 
   const storage = getStorage();
- 
+
   /* Solution for loading tags Start*/
   const [allTags, setAllTags] = useState([]);
 
   useEffect(() => {
-    console.log('useEffect called. Line 39.');
+    console.log("useEffect called. Line 39.");
     loadAllTagsFromDatabase();
   }, []);
 
-  async function loadAllTagsFromDatabase(){
-    console.log('loadAllTagsFromDatabase function called.')
-    try{
-      let allTagsFromDB= []
+  async function loadAllTagsFromDatabase() {
+    console.log("loadAllTagsFromDatabase function called.");
+    try {
+      let allTagsFromDB = [];
       const db = getFirestore();
-      console.log('connecting and getting the collection Tags...');
+      console.log("connecting and getting the collection Tags...");
       const querySnapshot = await getDocs(collection(db, "Tags"));
       querySnapshot.forEach((doc) => {
-        console.log('tag found in database, adding the tag to list');
+        console.log("tag found in database, adding the tag to list");
         console.log(doc.data());
-        allTagsFromDB.push(doc.data())
-      })
+        allTagsFromDB.push(doc.data());
+      });
 
-      console.log('setting the list in our variable allTags');
-      setAllTags(allTagsFromDB)
+      console.log("setting the list in our variable allTags");
+      setAllTags(allTagsFromDB);
 
-      console.log('Now allTags has following values : ');
+      console.log("Now allTags has following values : ");
       console.log(allTagsFromDB);
     } catch (e) {
       console.error("Error loading document: ", e);
@@ -141,6 +141,7 @@ function App() {
       console.log("Show error messages");
     } else {
       uploadFiles();
+      setShowSuccessMessage(true);
     }
     //if(validationFailed ()) return neka error poruka
   }
@@ -188,7 +189,6 @@ function App() {
   useEffect(() => {
     checkAddedTags();
   }, [tagName]);
-  
 
   return (
     <header className="App">
@@ -372,46 +372,30 @@ function App() {
               />
             </Form.Group>
             <Select
+            className="tagSelectBox"
               value={multipleSelectValue}
+              label="Tags"
               isMulti={true}
               isSearchable={true}
-              isClearable={true}
-              label="Tags"
-              className="tags-Label"
-              id="tagLabel"
-              name="tagsLabel"
-              placeholder="Select tag"
+              multiple
               onChange={(newValue) => {
                 setTagsLabel(newValue);
                 setMultipleSelectValue();
+                console.log("selected tag is : ", newValue);
               }}
-              showClear={true}
-              value={tagsLabel}
             >
-              <Select.Option value="1">Navbar</Select.Option>
-              <Select.Option value="2">Home</Select.Option>
-              <Select.Option value="3">Sign in</Select.Option>
-              <Select.Option value="4">Register</Select.Option>
-              <Select.Option value="5">Contact</Select.Option>
-              <Select.Option value="6">Services</Select.Option>
-            </Select>
-
-            <Select
-              value={multipleSelectValue}
-              label="Tags"
-              onChange={(newValue) => {
-                console.log('selected tag is : ', newValue);
-              }}>
-              {
-                allTags.map((item) => <Select.Option key={item.TagName} value={item.TagName}>{item.TagName}</Select.Option>)
-              }
+              {allTags.map((item) => (
+                <Select.Option key={item.TagName} value={item.TagName}>
+                  {item.TagName}
+                </Select.Option>
+              ))}
             </Select>
             {show ? (
               <TextField
                 id="tagName"
                 label="Tag Name"
-                name="tagName"
-                className="enter-tag-field"
+                name="tagNameBox"
+                className="tagNameBox"
                 helperText={tagName.length > 0 || skipTagName ? "" : ""}
                 onChange={(newValue) => {
                   setTagName(newValue);
@@ -422,7 +406,7 @@ function App() {
               />
             ) : null}
             {show ? (
-              <div>
+              <div className="btn-saveTag-wrapper">
                 <button
                   type="save"
                   className="btn btn-primary btn-sx btn-save"
@@ -434,10 +418,10 @@ function App() {
                 </button>
               </div>
             ) : null}
-            <div className="btn-newTag-wapper">
+            <div className="btn-newTag-wrapper">
               <button
                 type="submit"
-                className="btn btn-primary btn-sx btn-add"
+                className="btn btn-primary btn-sx btn-addNewTag"
                 id="NewTags"
                 onClick={() => setShow(!show)}
               >
@@ -457,9 +441,9 @@ function App() {
             Submit
           </button>
         </div>
-        {submitFormData ? (
+        {showSuccessMessage && 
           <div className="success-message">Submitted successfully</div>
-        ) : null}
+        }
       </Container>
     </header>
   );
