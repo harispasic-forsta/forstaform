@@ -28,7 +28,7 @@ function App() {
   const [disableSubmit, setDisableSubmit] = useState(true);
   const [disableSave, setDisableSave] = useState(true);
   const [show, setShow] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const storage = getStorage();
 
@@ -64,6 +64,9 @@ function App() {
   }
   /* Solution for loading tags End*/
 
+
+
+    /* Solution of adding new tags */
   async function SaveNameTag() {
     console.log();
 
@@ -93,6 +96,8 @@ function App() {
     });
     SaveNameTag(tagName);
   };
+
+  /* End of adding new tags */
 
   async function SaveFormData(fileNames) {
     console.log(fileNames);
@@ -131,10 +136,12 @@ function App() {
     });
     SaveFormData(fileNames);
   };
-
+/* Start adding files  */
   const onAttachmentChange = (e) => {
     setAttachments(Array.from(e.target.files));
   };
+
+  /* End of adding files */
 
   async function submitFormData() {
     if (checkRequiredFields()) {
@@ -166,6 +173,8 @@ function App() {
     checkRequiredFields();
   }, [project, url, subject, request]);
 
+  /* Start of adding new tags  */
+
   async function submitAddedTags() {
     if (checkAddedTags()) {
       console.log("Show error messages");
@@ -189,6 +198,7 @@ function App() {
   useEffect(() => {
     checkAddedTags();
   }, [tagName]);
+/*End of adding new tags  */
 
   return (
     <header className="App">
@@ -355,26 +365,18 @@ function App() {
                 }
               />
             </Form.Group>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Form.Group controlId="formAttachments">
-              <Form.Text className="text-muted">
-                Max 10 files and 10 mb per file
+            </Col>
+            </Row>
+            <Row>
+            <Col>
+            <Form.Text className="text-muted">
+                Please select tag
               </Form.Text>
-              <Form.Control
-                className="attachmentsblock"
-                name="file"
-                type="file"
-                multiple
-                onChange={onAttachmentChange}
-              />
-            </Form.Group>
+            <div className="tagSelectBox">    
             <Select
-            className="tagSelectBox"
               value={multipleSelectValue}
               label="Tags"
+              className="tag-Select-Box"
               isMulti={true}
               isSearchable={true}
               multiple
@@ -390,11 +392,30 @@ function App() {
                 </Select.Option>
               ))}
             </Select>
+            <div className="btn-newTag-wrapper">
+            <button
+              type="submit"
+              className="btn btn-primary btn-sx btn-addNewTag"
+              id="NewTags"
+              onClick={() => setShow(!show)}
+            >
+              + New tag
+            </button>
+          </div>
+            </div>
+            </Col>
+            </Row>
+            <Row>
+            <Col>
+            <Form.Text className="text-muted">
+                Please add tag
+              </Form.Text>
+            <div className="tagNameBox">
             {show ? (
               <TextField
                 id="tagName"
                 label="Tag Name"
-                name="tagNameBox"
+                name="tag-Name-Box"
                 className="tagNameBox"
                 helperText={tagName.length > 0 || skipTagName ? "" : ""}
                 onChange={(newValue) => {
@@ -418,16 +439,25 @@ function App() {
                 </button>
               </div>
             ) : null}
-            <div className="btn-newTag-wrapper">
-              <button
-                type="submit"
-                className="btn btn-primary btn-sx btn-addNewTag"
-                id="NewTags"
-                onClick={() => setShow(!show)}
-              >
-                + New tag
-              </button>
             </div>
+            </Col>
+            </Row>
+        <Row>
+          <Col>
+            <Form.Group controlId="formAttachments">
+              <Form.Text className="text-muted">
+                Max 10 files and 10 mb per file
+              </Form.Text>
+              <div className="attachmentsblock">
+              <Form.Control
+                className="attachments-block"
+                name="file"
+                type="file"
+                multiple
+                onChange={onAttachmentChange}
+              />
+              </div>
+            </Form.Group>
           </Col>
         </Row>
         <div className="btn-submit-wrapper">
