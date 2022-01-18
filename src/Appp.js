@@ -1,117 +1,493 @@
-import React from 'react';
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Container, Row, Col, Form, FormGroup } from "react-bootstrap";
+import TextField from "@confirmit/react-text-field";
+import Select from "@confirmit/react-select";
+import firebase from "./config/firebase";
+import { getFirestore } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { BsCloudUpload } from "react-icons/bs";
+import {BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
 
 function App() {
+  const [url, setUrl] = useState("");
+  const [project, setProject] = useState("");
+  const [report, setReport] = useState("");
+  const [slide, setSlide] = useState("");
+  const [subject, setSubject] = useState("");
+  const [request, setRequest] = useState("");
+  const [tagSelectBox, setTagSelectBox] = useState("");
+  const [tagName, setTagName] = useState("");
+  const [attachments, setAttachments] = useState([]);
+  const [multipleSelectValue, setMultipleSelectValue] = useState([]);
+  const [skipUrlValidation, setSkipUrlValidation] = useState(true);
+  const [skipSubjectValidation, setSkipSubjectValidation] = useState(true);
+  const [skipRequestValidation, setSkipRequestValidation] = useState(true);
+  const [skipProjectValidation, setSkipProjectValidation] = useState(true);
+  const [skipTagName, setSkipTagName] = useState(true);
+  const [disableSubmit, setDisableSubmit] = useState(true);
+  const [disableSave, setDisableSave] = useState(true);
+  const [show, setShow] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-return (
-  <header className="App">
-  <h1 style={{color:'#000'}}>Additional theme options</h1>
-  <Container>
-  <Form>
-  <Row>
-  <Col>
-  <Form.Group controlId='formURL'>
-  <Form.Label style={{color:'#000', display:'flex', justifyContent: 'left', marginTop:20}}>
-  URL
-  </Form.Label>
-  <Form.Text className='text-muted' style={{display:'flex', justifyContent: 'left', marginTop:20}} >
-  Dapresy server where this should be implemented
-  </Form.Text>
-    <Form.Control type='url' style={{height:48}}/>
-    </Form.Group>
-    </Col>
-  <Col>
-  <Form.Group controlId='formProject'>
-  <Form.Label style={{color:'#000', display:'flex', justifyContent: 'left', marginTop:20}}>
-    Project
-    </Form.Label>
-  <Form.Text className='text-muted' style={{display:'flex', justifyContent: 'left', marginTop:20}}>
-    Project name/code/ID where this should be imlemented
-    </Form.Text>
-    <Form.Control type='project' style={{height:48}}/>
-    </Form.Group>
-  </Col>
-  </Row>
-  </Form>
-  <Form>
-  <Row>
-  <Col>
-  <Form.Group controlId='formReport'>
-  <Form.Label style={{color:'#000', display:'flex', justifyContent: 'left', marginTop:20}}>
-  Report
-  </Form.Label>
-  <Form.Text className='text-muted' style={{display:'flex', justifyContent: 'left', marginTop:20}}>
-  If code applies to specific report, please specify report name/id
-  </Form.Text>
-  <Form.Control type='report' style={{height:48}} />
-  </Form.Group>
-  </Col>
-  <Col>
-  <Form.Group controlId='formSlide'>
-  <Form.Label style={{color:'#000', display:'flex', justifyContent: 'left', marginTop:20}}>
-  Slide
-  </Form.Label>
-  <Form.Text className='text-muted' style={{display:'flex', justifyContent: 'left', marginTop:20}}>
-  If code applies to specific slides, please specify
-  </Form.Text>
-  <Form.Control type='slide' style={{height:48}}/>
-  </Form.Group>
-  </Col>
-  </Row>
-  </Form>
-  <Form>
-  <Row>
-  <Col>
-  <Form.Group controlId='formSubject'>
-  <Form.Label style={{color:'#000', display:'flex', justifyContent: 'left', marginTop:20}}>
-  Subject
-  </Form.Label>
-  <Form.Text className='text-muted' style={{display:'flex', justifyContent: 'left', marginTop:20}}>
-  Brief description of your request
-  </Form.Text>
-    <Form.Control type='subject' style={{height:48}}/>
-    </Form.Group>
-    </Col>
-    </Row>
-    </Form>
-    <Form>
-    <Row>
-    <Col>
-    <Form.Group controlId='formRequest'>
-    <Form.Label style={{color:'#000', display:'flex', justifyContent: 'left', marginTop:20}}>
-    Request
-    </Form.Label>
-    <Form.Text className='text-muted' style={{display:'flex', justifyContent: 'left', marginTop:20}}>
-    Please fill in all details of your request, you may also attach a pdf/doc etc with full details
-    </Form.Text>
-      <Form.Control type='request' style={{height:98}} />
-      </Form.Group>
-      </Col>
-      </Row>
-      </Form>
-      <Form>
-      <Row>
-      <Col>
-      <Form.Group controlId='formAttachments'>
-      <Form.Label style={{color:'#000', display:'flex', justifyContent: 'left', marginTop:20}}>
-      Attachments
-      </Form.Label>
-      <Form.Text className='text-muted' style={{display:'flex', justifyContent: 'left', marginTop:20}}>
-      Max 10 files and 10 mb per file
-      </Form.Text>
-        <Form.Control type='attachments' style={{height:120}} />
-        </Form.Group>
-        </Col>
-        </Row>
-        </Form>
-      <div class='text-center'>
-  <Button class="btn btn-primary btn-sx" type="submit" style={{marginTop:20}}>Submit</Button>
-  </div>
-  </Container>
-  </header>
-  )
+  const storage = getStorage();
+
+  /* Solution for loading tags Start*/
+  const [allTags, setAllTags] = useState([]);
+
+  useEffect(() => {
+    console.log("useEffect called. Line 39.");
+    loadAllTagsFromDatabase();
+  }, []);
+
+  async function loadAllTagsFromDatabase() {
+    console.log("loadAllTagsFromDatabase function called.");
+    try {
+      let allTagsFromDB = [];
+      const db = getFirestore();
+      console.log("connecting and getting the collection Tags...");
+      const querySnapshot = await getDocs(collection(db, "Tags"));
+      querySnapshot.forEach((doc) => {
+        console.log("tag found in database, adding the tag to list");
+        console.log(doc.data());
+        allTagsFromDB.push(doc.data());
+      });
+
+      console.log("setting the list in our variable allTags");
+      setAllTags(allTagsFromDB);
+
+      console.log("Now allTags has following values : ");
+      console.log(allTagsFromDB);
+    } catch (e) {
+      console.error("Error loading document: ", e);
+    }
   }
-  
-  export default App;
+  /* Solution for loading tags End*/
+
+  /* Solution of adding new tags */
+  async function SaveNameTag() {
+    console.log();
+
+    try {
+      let tagData = {
+        TagName: tagName,
+      };
+
+      const db = getFirestore();
+      const responseData = await addDoc(collection(db, "Tags"), tagData);
+      console.log("Document written with ID: ", responseData.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
+
+  const saveTagNames = (e) => {
+    let tagName = [];
+    attachments.forEach((element) => {
+      let uniqueName = parseInt(Math.random() * 100000) + element.name;
+      tagName.push(uniqueName);
+      const storageRef = ref(storage, uniqueName);
+      uploadBytes(storageRef, element).then((snapshot) => {
+        console.log("Upload done");
+        console.log(snapshot);
+      });
+    });
+    SaveNameTag(tagName);
+  };
+
+  /* End of adding new tags */
+
+  async function SaveFormData(fileNames) {
+    console.log(fileNames);
+
+    try {
+      let orderData = {
+        Attachmments: fileNames,
+        Project: project,
+        Report: report,
+        Request: request,
+        Slide: slide,
+        Subject: subject,
+        URL: url,
+        Tags: tagSelectBox,
+      };
+
+      const db = getFirestore();
+      const responseData = await addDoc(collection(db, "Orders"), orderData);
+      console.log("Document written with ID: ", responseData.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
+
+  //uploading files to saveformdata with uniquename and id
+  const uploadFiles = (e) => {
+    let fileNames = [];
+    attachments.forEach((element) => {
+      let uniqueName = parseInt(Math.random() * 100000) + element.name;
+      fileNames.push(uniqueName);
+      const storageRef = ref(storage, uniqueName);
+      uploadBytes(storageRef, element).then((snapshot) => {
+        console.log("Upload done");
+        console.log(snapshot);
+      });
+    });
+    SaveFormData(fileNames);
+  };
+  /* Start adding files  */
+  const onAttachmentChange = (e) => {
+    setAttachments(Array.from(e.target.files));
+  };
+
+  /* End of adding files */
+
+  async function submitFormData() {
+    if (checkRequiredFields()) {
+      console.log("Show error messages");
+    } else {
+      uploadFiles();
+      setShowSuccessMessage(true);
+    }
+    //if(validationFailed ()) return neka error poruka
+  }
+  const checkRequiredFields = () => {
+    let hasErrors = true;
+    if (
+      project.length > 0 &&
+      url.length > 0 &&
+      subject.length > 0 &&
+      request.length > 0
+    ) {
+      setDisableSubmit(false);
+      console.log("enableButton");
+      hasErrors = false;
+    } else {
+      setDisableSubmit(true);
+    }
+    return hasErrors;
+  };
+
+  useEffect(() => {
+    checkRequiredFields();
+  }, [project, url, subject, request]);
+
+  /* Start of adding new tags  */
+
+  async function submitAddedTags() {
+    if (checkAddedTags()) {
+      console.log("Show error messages");
+    } else {
+      saveTagNames();
+    }
+  }
+
+  const checkAddedTags = () => {
+    let hasErrors = true;
+    if (tagName.length > 0) {
+      setDisableSave(false);
+      console.log("enableSave");
+      hasErrors = false;
+    } else {
+      setDisableSave(true);
+    }
+    return hasErrors;
+  };
+
+  useEffect(() => {
+    checkAddedTags();
+  }, [tagName]);
+  /*End of adding new tags  */
+
+  return (
+    <header className="App">
+    <div>
+    <Router>
+    <Navbar/>
+    </Router>
+    </div>
+      <Container>
+        <Row>
+          <Col>
+            <FormGroup controlId="formURL">
+              <Form.Text className="text-muted">
+                Dapresy server where this should be implemented
+              </Form.Text>
+              <TextField
+                type="url"
+                id="url"
+                label="URL"
+                name="URL"
+                required
+                className="URL-input-field"
+                helperText={
+                  url.length > 0 || skipUrlValidation ? "" : "Please enter URL"
+                }
+                onChange={(newValue) => {
+                  setUrl(newValue);
+                  setSkipUrlValidation(false);
+                }}
+                placeholder="Enter installation URL"
+                showClear={true}
+                value={url}
+                error={url.length > 0 || skipUrlValidation ? false : true}
+              />
+            </FormGroup>
+          </Col>
+          <Col>
+            <Form.Group controlId="formProject">
+              <Form.Text className="text-muted">
+                Project name/code/ID where this should be imlemented
+              </Form.Text>
+              <TextField
+                id="project"
+                label="Project"
+                name="Project"
+                required
+                className="Project-input-field"
+                helperText={
+                  project.length > 0 || skipProjectValidation
+                    ? ""
+                    : "Please enter project"
+                }
+                onChange={(newValue) => {
+                  setProject(newValue);
+                  setSkipProjectValidation(false);
+                }}
+                placeholder="Enter project name/code/ID"
+                showClear={true}
+                value={project}
+                error={
+                  project.length > 0 || skipProjectValidation ? false : true
+                }
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Form.Group controlId="formReport">
+              <Form.Text className="text-muted">
+                If code applies to specific report, please specify report
+                name/id
+              </Form.Text>
+              <TextField
+                id="report"
+                label="Report"
+                name="Report"
+                className="Report-input-field"
+                onChange={(newValue) => {
+                  setReport(newValue);
+                }}
+                placeholder="Enter report name/ID"
+                showClear={true}
+                value={report}
+              />
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group controlId="formSlide">
+              <Form.Text className="text-muted">
+                If code applies to specific slides, please specify
+              </Form.Text>
+              <TextField
+                id="slide"
+                label="Slide"
+                name="Slide"
+                type="text"
+                min="1"
+                className="Slide-input-field"
+                onChange={(newValue) => {
+                  setSlide(newValue);
+                }}
+                placeholder="Enter slide number"
+                showClear={true}
+                value={slide}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Form.Group controlId="formSubject">
+              <Form.Text className="text-muted">
+                Brief description of your request
+              </Form.Text>
+              <TextField
+                id="subject"
+                label="Subject"
+                name="Subject"
+                required
+                className="Subject-input-field"
+                helperText={
+                  subject.length > 0 || skipSubjectValidation
+                    ? ""
+                    : "Please enter subject"
+                }
+                onChange={(newValue) => {
+                  setSubject(newValue);
+                  setSkipSubjectValidation(false);
+                }}
+                placeholder="Enter subject"
+                showClear={true}
+                value={subject}
+                error={
+                  subject.length > 0 || skipSubjectValidation ? false : true
+                }
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Form.Group controlId="formRequest">
+              <Form.Text className="text-muted">
+                Please fill in all details of your request, you may also attach
+                a pdf/doc etc with full details
+              </Form.Text>
+              <TextField
+                id="request"
+                label="Request"
+                name="Request"
+                required
+                className="Request-input-field"
+                helperText={
+                  request.length > 0 || skipRequestValidation
+                    ? ""
+                    : "Please enter request"
+                }
+                onChange={(newValue) => {
+                  setRequest(newValue);
+                  setSkipRequestValidation(false);
+                }}
+                placeholder="Request"
+                showClear={true}
+                value={request}
+                error={
+                  request.length > 0 || skipRequestValidation ? false : true
+                }
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Form.Text className="text-muted">Please select tag</Form.Text>
+            <div className="tagSelectBox">
+              <Select
+                id="tag-box"
+                value={multipleSelectValue}
+                placeholder="Tags"
+                className="tag-Select-Box"
+                isMulti={true}
+                isSearchable={true}
+                isClearable={true}
+                multiple
+                onChange={(newValue) => {
+                  setTagSelectBox(newValue);
+                  setMultipleSelectValue();
+                  console.log("selected tag is : ", newValue);
+                }}
+                showClear={true}
+                value={tagSelectBox}
+              >
+                {allTags.map((item) => (
+                  <Select.Option key={item.TagName} value={item.TagName}>
+                    {item.TagName}
+                  </Select.Option>
+                ))}
+              </Select>
+              <div className="btn-newTag-wrapper">
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-sx btn-addNewTag"
+                  id="NewTags"
+                  onClick={() => setShow(!show)}
+                >
+                  + New tag
+                </button>
+              </div>
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            {show ? (
+              <Form.Text className="text-muted">Please add tag</Form.Text>
+            ) : null}
+            <div className="tagNameBox">
+              {show ? (
+                <TextField
+                  id="tagName"
+                  label="Tag Name"
+                  name="tag-Name-Box"
+                  className="tagNameBox"
+                  helperText={tagName.length > 0 || skipTagName ? "" : ""}
+                  onChange={(newValue) => {
+                    setTagName(newValue);
+                    setSkipTagName(false);
+                  }}
+                  value={tagName}
+                  showClear={true}
+                />
+              ) : null}
+              {show ? (
+                <div className="btn-saveTag-wrapper">
+                  <button
+                    type="save"
+                    className="btn btn-primary btn-sx btn-save"
+                    id="saveTag"
+                    onClick={submitAddedTags}
+                    disabled={disableSave}
+                  >
+                    Save tag
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Form.Group controlId="formAttachments">
+              <Form.Text className="text-muted">
+                Max 10 files and 10 mb per file
+              </Form.Text>
+              <div className="uploadIcon">
+                <input
+                  id="upload-file"
+                  className="attachmentsBlock"
+                  name="file"
+                  type="file"
+                  multiple
+                  onChange={onAttachmentChange}
+                />
+                <label for="upload-file">
+                  <BsCloudUpload className="uploadFilesIcon" />
+                </label>
+              </div>
+            </Form.Group>
+          </Col>
+        </Row>
+        <div className="btn-submit-wrapper">
+          <button
+            type="submit"
+            className="btn btn-primary btn-sx btn-submit"
+            onClick={submitFormData}
+            id="submit"
+            disabled={disableSubmit}
+          >
+            Submit
+          </button>
+        </div>
+        {showSuccessMessage && (
+          <div className="success-message">Submitted successfully</div>
+        )}
+      </Container>
+    </header>
+  );
+}
+
+export default App;
