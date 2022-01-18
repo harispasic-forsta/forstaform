@@ -9,22 +9,21 @@ import AddCCtoLibrary from "./components/pages/AddCCtoLibrary";
 import RegistrationPage from "./components/pages/registrationPage";
 
 
-
 function App() {
   return (
-    <header className="App">
-      <div>
-        <Router>
-          <Navbar />
-          <Routes>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/cc-library" element={<CCLibrary />} />
-            <Route path="/add-cc-to-library" element={<AddCCtoLibrary />} />
-          </Routes>
-        </Router>
-        <RegistrationPage />
-      </div>
-    </header>
+      <header className="App">
+        <div>
+          <Router>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/cc-library" element={<CCLibrary />} />
+              <Route path="/add-cc-to-library" element={<AddCCtoLibrary />} />
+            </Routes>
+          </Router>
+          <RegistrationPage />
+        </div>
+      </header>
   );
 }
 

@@ -26,7 +26,7 @@ function Navbar() {
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
           <div className='nav-title'>
-          <Link to='/dashboard' className='navbar-logo' >
+          <Link to='/' className='navbar-logo' >
           Web Design Library 
         </Link>
         </div>

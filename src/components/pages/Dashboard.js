@@ -6,7 +6,6 @@ import OrderForm from "../OrderForm";
 export default function Dashboard() {
   return (
     <>
-      <h1>hello</h1>
       <OrderForm />
     </>
   );
