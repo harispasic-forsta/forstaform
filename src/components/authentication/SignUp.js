@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
@@ -12,11 +13,31 @@ export default function SignUp() {
   const [signupEmail, setSignupEmail] = useState("");
   const [signupUserName, setSignupUserName] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
-  const [signupPasswordConfirmation, setSignupPasswordConfirmation] =
-    useState("");
+  const [signupPasswordConfirmation, setSignupPasswordConfirmation] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
+
+  const signupNEW = async () => {
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, signupEmail, signupPassword)
+    .then((userCredential) => {
+      // Signed in 
+      const user = userCredential.user;
+      console.log('SIGN IN success');
+      console.log(user);
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log('error code : ',errorCode);
+      console.log('error msg : ',errorMessage);
+
+    });
+    
+  };
+
+  /*
   const signup = async () => {
     try {
       const user = await createUserWithEmailAndPassword(
@@ -32,7 +53,7 @@ export default function SignUp() {
     } catch (error) {
       console.log(error.message);
     }
-  };
+  };*/
 
   const login = async () => {
     try {
@@ -126,9 +147,9 @@ export default function SignUp() {
               />
             </Form.Group>
             <Button
-              onClick={signup}
+              onClick={signupNEW}
               className="w-100"
-              type="submit"
+              type="button"
               style={{ marginTop: "10px" }}
             >
               Sign Up
