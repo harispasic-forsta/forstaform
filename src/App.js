@@ -6,7 +6,10 @@ import Navbar from "./components/Navbar";
 import Dashboard from "./components/pages/Dashboard";
 import CCLibrary from "./components/pages/CCLibrary";
 import AddCCtoLibrary from "./components/pages/AddCCtoLibrary";
-import RegistrationPage from "./components/pages/registrationPage";
+import SignUp from './components/authentication/SignUp'
+import Login from './components/authentication/Login'
+import ForgotPassword from './components/authentication/ForgotPassword'
+import ProtectedRoutes from "./components/ProtectedRoutes";
 
 
 function App() {
@@ -16,12 +19,16 @@ function App() {
           <Router>
             <Navbar />
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+            <Route element={<ProtectedRoutes />}>
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/cc-library" element={<CCLibrary />} />
               <Route path="/add-cc-to-library" element={<AddCCtoLibrary />} />
+              </Route>
+              <Route path="/signup" element={<SignUp/>} />
+              <Route path="/" element={<Login/>} />
+              <Route path="/forgot-password" element={<ForgotPassword/>} />
             </Routes>
           </Router>
-          <RegistrationPage />
         </div>
       </header>
   );

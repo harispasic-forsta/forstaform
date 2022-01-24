@@ -1,0 +1,26 @@
+.signup{
+    max-width: 400px;
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    margin-top: 60px;
+}
+
+.signup-btn{
+    margin-top: 10px;
+}
+
+.signup-link {
+    padding: 10px 10px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    align-items: center;
+}
+
+.login-link {
+    text-decoration: none;
+}

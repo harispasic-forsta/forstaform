@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { Form, Card, Button } from "react-bootstrap";
 import { auth } from "../../config/firebase";
+import { getFirestore } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
+import { Link, useNavigate } from "react-router-dom";
+import './SignUp.css'
 
 export default function SignUp() {
   const [signupFirstName, setSignupFirstName] = useState("");
@@ -13,85 +17,85 @@ export default function SignUp() {
   const [signupEmail, setSignupEmail] = useState("");
   const [signupUserName, setSignupUserName] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
-  const [signupPasswordConfirmation, setSignupPasswordConfirmation] = useState("");
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
+  const [signupPasswordConfirmation, setSignupPasswordConfirmation] =
+    useState("");
+  const [user, setUser] = useState({});
+ 
+    let navigate = useNavigate();
 
+  onAuthStateChanged(auth, (currentUser) => {
+    setUser(currentUser);
+  });
 
-  const signupNEW = async () => {
+  const signup = async () => {
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, signupEmail, signupPassword)
-    .then((userCredential) => {
-      // Signed in 
-      const user = userCredential.user;
-      console.log('SIGN IN success');
-      console.log(user);
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log('error code : ',errorCode);
-      console.log('error msg : ',errorMessage);
+      .then((userCredential) => {
 
-    });
-    
+        // Signed in
+        const user = userCredential.user;
+        console.log("Sign In Success");
+        console.log(user);
+        saveUserData();
+        navigate('/dashboard')
+      })
+      .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log("error code :", errorCode)
+    console.log("error msg :", errorMessage)
+      });
+  
   };
 
-  /*
-  const signup = async () => {
-    try {
-      const user = await createUserWithEmailAndPassword(
-        auth,
-        signupFirstName,
-        signupLastName,
-        signupEmail,
-        signupUserName,
-        signupPassword,
-        signupPasswordConfirmation
-      );
-      console.log(user);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };*/
+  async function saveUserData() {
+    console.log();
 
-  const login = async () => {
     try {
-      const user = await signInWithEmailAndPassword(
-        auth,
-        loginEmail,
-        loginPassword
-      );
-      console.log(user);
-    } catch (error) {
-      console.log(error.message);
+      let userData = {
+        FirstName: signupFirstName,
+        LastName: signupLastName,
+        Email: signupEmail,
+        UserName: signupUserName,
+      };
+
+      const db = getFirestore();
+      const responseData = await addDoc(collection(db, "Users"), userData);
+      console.log("Document written with ID: ", responseData.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
     }
-  };
+
+  }
+
+ 
 
   return (
     <>
-      <Card>
+      <Card className="signup" >
         <Card.Body>
           <h2 className="text-center mb-4">Sign Up</h2>
-          <Form>
+          <Form id="signup-form">
             <Form.Group id="first-name">
               <Form.Label>First name</Form.Label>
               <Form.Control
                 type="text"
+                name="firstName"
                 className="inner-text"
-                placeholder="First name"
+                placeholder="First Name"
                 required
                 onChange={(e) => {
                   setSignupFirstName(e.target.value);
                 }}
               />
-            </Form.Group>
+            </Form.Group> 
             <Form.Group id="last-name">
               <Form.Label>Last name</Form.Label>
               <Form.Control
                 type="text"
+                name="lastName"
                 className="inner-text"
-                placeholder="Last name"
+                placeholder="Last Name"
                 required
                 onChange={(e) => {
                   setSignupLastName(e.target.value);
@@ -110,12 +114,13 @@ export default function SignUp() {
                 }}
               />
             </Form.Group>
-            <Form.Group id="username">
+            <Form.Group id="user-name">
               <Form.Label>User name</Form.Label>
               <Form.Control
                 type="text"
                 className="inner-text"
-                placeholder="User name"
+                placeholder="User Name"
+                name="userName"
                 required
                 onChange={(e) => {
                   setSignupUserName(e.target.value);
@@ -128,6 +133,7 @@ export default function SignUp() {
                 type="password"
                 className="inner-text"
                 placeholder="Password"
+                name="password"
                 required
                 onChange={(e) => {
                   setSignupPassword(e.target.value);
@@ -140,82 +146,27 @@ export default function SignUp() {
                 type="password"
                 placeholder="Password Confirmation"
                 className="inner-text"
+                name="passwordConfirmation"
                 required
                 onChange={(e) => {
                   setSignupPasswordConfirmation(e.target.value);
                 }}
               />
             </Form.Group>
-            <Button
-              onClick={signupNEW}
+          <Button
+              onClick={signup}
               className="w-100"
               type="button"
-              style={{ marginTop: "10px" }}
+              className="signup-btn"
             >
               Sign Up
-            </Button>
+            </Button> 
           </Form>
         </Card.Body>
       </Card>
-      <div className="w-100 text-center mt-2">
-        Already have an account? Log In
+      <div className="signup-link" >
+        Already have an account?  <Link to="/" className="login-link">Log In</Link>
       </div>
-
-      <Card>
-        <Card.Body>
-          <h2 className="text-center mb-4">Log In</h2>
-          <Form>
-            <Form.Group id="email">
-              <Form.Label>User name</Form.Label>
-              <Form.Control
-                type="email"
-                className="inner-text"
-                placeholder="Email"
-                required
-                onChange={(e) => {
-                  setLoginEmail(e.target.value);
-                }}
-              />
-            </Form.Group>
-            <Form.Group id="password">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                className="inner-text"
-                placeholder="Password"
-                required
-                onChange={(e) => {
-                  setLoginPassword(e.target.value);
-                }}
-              />
-            </Form.Group>
-            <Button
-              onClick={login}
-              className="w-100"
-              type="submit"
-              style={{ marginTop: "10px" }}
-            >
-              Log In
-            </Button>
-          </Form>
-        </Card.Body>
-      </Card>
-      <div className="w-100 text-center mt-2">Forgot password? Sign Up</div>
-
-      <Card>
-        <Card.Body>
-          <Form>
-            <h4>User Logged In:</h4>
-            <Button
-              className="w-100"
-              type="submit"
-              style={{ marginTop: "10px" }}
-            >
-              Sign Out
-            </Button>
-          </Form>
-        </Card.Body>
-      </Card>
     </>
   );
 }
