@@ -9,6 +9,10 @@
     margin-top: 60px;
 }
 
+.inner-text{
+    margin-bottom: 15px;
+}
+
 .signup-btn{
     margin-top: 10px;
 }
@@ -23,4 +27,5 @@
 
 .login-link {
     text-decoration: none;
+    margin-left: 5px;
 }

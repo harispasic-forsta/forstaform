@@ -1,35 +1,41 @@
-import { signOut } from "firebase/auth";
-import { onAuthStateChanged } from "firebase/auth";
-
 import React, { useState } from "react";
-import { Form, Card, Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import { auth } from "../../config/firebase";
+import { Form, Card, Button, Alert } from "react-bootstrap";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import "./SignOut.css";
 
 export default function SignOut() {
-  const [user, setUser] = useState({});
-
+  const [error, setError] = useState("");
+  const { currentUser, logout } = useAuth();
   let navigate = useNavigate();
 
-  onAuthStateChanged(auth, (currentUser) => {
-    setUser(currentUser);
-  });
+  async function handleLogout() {
+    setError("");
 
-  const signout = async () => {
-    await signOut(auth);
-    navigate("/");
-  };
+    try {
+      await logout();
+      navigate("/");
+    } catch {
+      setError("Failed to log out");
+    }
+  }
 
   return (
     <>
-      <Card className="login">
+      <Card className="signout">
         <Card.Body>
-          <Form>
-            <h4> User Logged In: </h4>
-            {user?.email}
-            <Button className="signout-btn" onClick={signout}> Sign Out </Button>
-          </Form>
+          <h2 className="login-body">Profile</h2>
+          {error && <Alert variant="danger">{error}</Alert>}
+          <strong>Email:</strong> {currentUser.email}
+          <div className="update-logout-btn">
+            <Link to="/update-profile" className="btn btn-primary mt-10">
+              Update Profile
+            </Link>
+            <Button className="signout-btn" onClick={handleLogout}>
+              {" "}
+              Log Out{" "}
+            </Button>
+          </div>
         </Card.Body>
       </Card>
     </>

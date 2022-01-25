@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { SidebarData } from './SidebarData';
 import './Navbar.css';
 import { IconContext } from 'react-icons';
+import * as AiIcons from 'react-icons/ai';
 import{ BsBell } from "react-icons/bs";
 import{ BsImage  } from "react-icons/bs";
 import{ BsThreeDots  } from "react-icons/bs";
@@ -26,22 +27,10 @@ function Navbar() {
           </Link>
           <div className='nav-title'>
           <Link to='/' className='navbar-logo' >
-          Web Design Library 
+          CC Library 
         </Link>
         </div>
         <div className='Icons'> 
-        <ul>
-        <li className="search-box">
-        <input
-          className="search-txt"
-          type="text"
-          name="searchBox"
-          placeholder="Search now"
-        />
-        <a className="search-btn" href="#" />
-            <BsSearch className="searchIcon" />
-        </li>
-        </ul>
         <ul className='Nav-menu'>
         <li>
             <Link to='/bell' className='icons' >
@@ -53,17 +42,15 @@ function Navbar() {
             <BsImage  className="imgIcon"/>
             </Link>
           </li>        
-          <li>
-            <Link to='/dots' className='icons' >
-            <BsThreeDots  className="dotsIcon"/>
-            </Link>
-          </li>
           </ul>
           </div>
           </nav>
         <nav className={sidebar ? 'nav-menu active' : 'nav-menu'}>
           <ul className='nav-menu-items' onClick={showSidebar}>
             <li className='navbar-toggle'>
+            <Link to='#' className='menu-bars'>
+            <AiIcons.AiOutlineClose />
+          </Link>
             </li>
             {SidebarData.map((item, index) => {
               return (

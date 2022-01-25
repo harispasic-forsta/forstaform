@@ -1,74 +1,56 @@
 import React, { useState, useRef } from "react";
 import { Form, Card, Button, Alert } from "react-bootstrap";
-import { getFirestore } from "firebase/firestore";
-import { collection, addDoc } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "./SignUp.css";
 
-export default function SignUp() {
-  const [signupFirstName, setSignupFirstName] = useState("");
-  const [signupLastName, setSignupLastName] = useState("");
-  const [signupEmail, setSignupEmail] = useState("");
-  const [signupUserName, setSignupUserName] = useState("");
+export default function UpdateProfile() {
   const firstNameRef = useRef();
   const lastNameRef = useRef();
   const emailRef = useRef();
   const userNameRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmationRef = useRef();
-  const { signup } = useAuth();
+  const { currentUser, updateEmail, updatePassword } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   let navigate = useNavigate();
 
-  async function handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
-
     if (passwordRef.current.value !== passwordConfirmationRef.current.value) {
       return setError("Passwords do not match");
     }
-    
-    try {
-      setError("");
-      setLoading(true);
-      await signup(emailRef.current.value, passwordRef.current.value);
-      saveUserData();
-      navigate("/dashboard");
-    } catch {
-      setError("Email already exists");
-    }
-    setLoading(false);
-  }
 
-  async function saveUserData() {
-    console.log();
+    const promises = [];
+    setLoading(true);
+    setError("");
 
-    try {
-      let userData = {
-        FirstName: signupFirstName,
-        LastName: signupLastName,
-        Email: signupEmail,
-        UserName: signupUserName,
-      };
-
-      const db = getFirestore();
-      const responseData = await addDoc(collection(db, "Users"), userData);
-      console.log("Document written with ID: ", responseData.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
+    if (emailRef.current.value !== currentUser.email) {
+      promises.push(updateEmail(emailRef.current.value));
     }
 
-    if(signupUserName === signupUserName){
-      setError("Username already exists");
+    if (passwordRef.current.value) {
+      promises.push(updatePassword(passwordRef.current.value));
     }
+
+    Promise.all(promises)
+      .then(() => {
+        navigate("/");
+      })
+      .catch(() => {
+        setError("Failed to update account");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
 
   return (
     <>
       <Card className="signup">
         <Card.Body>
-          <h2 className="text-center mb-4">Sign Up</h2>
+          <h2 className="text-center mb-4">Update Profile</h2>
           {error && <Alert variant="danger">{error}</Alert>}
           <Form id="signup-form" onSubmit={handleSubmit}>
             <Form.Group id="first-name">
@@ -79,9 +61,6 @@ export default function SignUp() {
                 placeholder="First Name"
                 required
                 ref={firstNameRef}
-                onChange={(e) => {
-                  setSignupFirstName(e.target.value);
-                }}
               />
             </Form.Group>
             <Form.Group id="last-name">
@@ -92,9 +71,6 @@ export default function SignUp() {
                 placeholder="Last Name"
                 required
                 ref={lastNameRef}
-                onChange={(e) => {
-                  setSignupLastName(e.target.value);
-                }}
               />
             </Form.Group>
             <Form.Group id="email">
@@ -104,9 +80,7 @@ export default function SignUp() {
                 placeholder="Email"
                 required
                 ref={emailRef}
-                onChange={(e) => {
-                  setSignupEmail(e.target.value);
-                }}
+                defaultValue={currentUser.email}
               />
             </Form.Group>
             <Form.Group id="user-name">
@@ -117,41 +91,35 @@ export default function SignUp() {
                 name="userName"
                 ref={userNameRef}
                 required
-                onChange={(e) => {
-                  setSignupUserName(e.target.value);
-                }}
               />
             </Form.Group>
             <Form.Group id="password">
               <Form.Control
                 type="password"
                 className="inner-text"
-                placeholder="Password"
+                placeholder="Leave blank to keep the same"
                 name="password"
                 ref={passwordRef}
-                required
               />
             </Form.Group>
             <Form.Group id="password-confirmation">
               <Form.Control
                 type="password"
-                placeholder="Password Confirmation"
+                placeholder="Leave blank to keep the same"
                 className="inner-text"
                 name="passwordConfirmation"
                 ref={passwordConfirmationRef}
-                required
               />
             </Form.Group>
             <Button type="submit" className="signup-btn" disabled={loading}>
-              Sign Up
+              Update
             </Button>
           </Form>
         </Card.Body>
       </Card>
       <div className="signup-link">
-        Already have an account?
         <Link to="/" className="login-link">
-          Log In
+          Cancel
         </Link>
       </div>
     </>
