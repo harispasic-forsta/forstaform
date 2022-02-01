@@ -1,56 +1,91 @@
-import React, { useState } from 'react';
-import * as FaIcons from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import { SidebarData } from './SidebarData';
-import './Navbar.css';
-import { IconContext } from 'react-icons';
-import * as AiIcons from 'react-icons/ai';
-import{ BsBell } from "react-icons/bs";
-import{ BsImage  } from "react-icons/bs";
-import{ BsThreeDots  } from "react-icons/bs";
-import{ BsSearch } from "react-icons/bs";
+import React, { useState, useEffect } from "react";
+import * as FaIcons from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { SidebarData } from "./SidebarData";
+import "./Navbar.css";
+import { IconContext } from "react-icons";
+import * as AiIcons from "react-icons/ai";
+import { BsBell } from "react-icons/bs";
+import { CgProfile } from "react-icons/cg";
+import Dropdown from "./Dropdown";
+import { MenuItems } from './MenuItems';
 
 
-
-
-function Navbar() {
+export default function Navbar() {
   const [sidebar, setSidebar] = useState(false);
+  const [click, setClick] = useState(false);
+  const [dropdown, setDropdown] = useState(false);
 
   const showSidebar = () => setSidebar(!sidebar);
+  const showDropdown = () => setDropdown(!dropdown)
+  const closeMobileMenu = () => setClick(false);
+
+  /*useEffect(() => {
+    document.addEventListener('mousedown', () => {
+      setDropdown(true)
+    }) 
+  })*/
+
+
 
   return (
     <>
-      <IconContext.Provider value={{ color: '#fff' }}>
-        <nav className='navbar'>
-          <Link to='#' className='menu-bars'>
-            <FaIcons.FaBars onClick={showSidebar} />
+      <IconContext.Provider value={{ color: "black" }}>
+        <nav className="navbar">
+          <Link to="#" className="menu-bars">
+            <FaIcons.FaBars className="hamburger" onClick={showSidebar} />
           </Link>
-          <div className='nav-title'>
-          <Link to='/' className='navbar-logo' >
-          CC Library 
-        </Link>
-        </div>
-        <div className='Icons'> 
-        <ul className='Nav-menu'>
-        <li>
-            <Link to='/bell' className='icons' >
-            <BsBell className="bellIcon"/>
+          <div className="nav-title">
+            <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
+              CC Library  
+
             </Link>
-            </li>
-           <li>
-            <Link to='/img' className='icons' >
-            <BsImage  className="imgIcon"/>
-            </Link>
-          </li>        
-          </ul>
           </div>
-          </nav>
-        <nav className={sidebar ? 'nav-menu active' : 'nav-menu'}>
-          <ul className='nav-menu-items' onClick={showSidebar}>
-            <li className='navbar-toggle'>
-            <Link to='#' className='menu-bars'>
-            <AiIcons.AiOutlineClose />
-          </Link>
+          <div>
+            <ul className={click ? "Nav-menu active" : "Nav-menu"}>
+              <li className="nav-item">
+                <Link to="#" className="nav-links" onClick={closeMobileMenu}  >
+                  <BsBell />
+                </Link>
+              </li>
+              <li
+                className="nav-item"
+              >
+                <Link
+                  to="#"
+                  className="nav-links"
+                 >
+                  <CgProfile onClick={showDropdown}/> 
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </nav>
+        <nav>
+        <ul
+        onClick={showDropdown}
+        className={dropdown ? 'dropdown-menu clicked' : 'dropdown-menu'}
+      >
+        {MenuItems.map((item, index) => {
+          return (
+            <li key={index} >
+              <Link
+                className={item.cName}
+                to={item.path}
+              >
+                {item.title}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+        </nav>
+        <nav className={sidebar ? "sidebar-menu active" : "sidebar-menu"}>
+          <ul className="sidebar-menu-items" onClick={showSidebar}>
+            <li className="sidebar-toggle">
+              <Link to="#" className="menu-bars">
+                <AiIcons.AiOutlineClose className="close" />
+              </Link>
             </li>
             {SidebarData.map((item, index) => {
               return (
@@ -68,5 +103,3 @@ function Navbar() {
     </>
   );
 }
-
-export default Navbar;

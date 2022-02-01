@@ -1,8 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Form, Card, Button, Alert } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import "./SignUp.css";
+import { collection, getDocs, getFirestore, query, where } from "firebase/firestore";
+import "./UpdateProfile.css";
 
 export default function UpdateProfile() {
   const firstNameRef = useRef();
@@ -14,10 +15,30 @@ export default function UpdateProfile() {
   const { currentUser, updateEmail, updatePassword } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [singleDoc, setSingleDoc] = useState({});
+
+
+  useEffect(() => {
+    console.log("useEffect called. Line 39.");
+    updateData();
+    }, []);
+
+
+async function updateData() {
+  const db = getFirestore();
+  const q  = query (collection(db, "Users"), where("email", "==", emailRef.current.value));
+  const querySnapshot =  await getDocs(q) 
+   querySnapshot.forEach((doc) => {
+    console.log(doc.id, " => ", doc.data());
+  })
+  ;}
+  
+
   let navigate = useNavigate();
 
   function handleSubmit(e) {
     e.preventDefault();
+      
     if (passwordRef.current.value !== passwordConfirmationRef.current.value) {
       return setError("Passwords do not match");
     }
@@ -48,7 +69,7 @@ export default function UpdateProfile() {
 
   return (
     <>
-      <Card className="signup">
+      <Card id='update-profile-id' className="update-profile">
         <Card.Body>
           <h2 className="text-center mb-4">Update Profile</h2>
           {error && <Alert variant="danger">{error}</Alert>}
@@ -59,10 +80,12 @@ export default function UpdateProfile() {
                 name="firstName"
                 className="inner-text"
                 placeholder="First Name"
-                required
-                ref={firstNameRef}
-              />
+                required 
+                ref={firstNameRef} 
+                defaultValue={currentUser.FirstName} 
+              /> 
             </Form.Group>
+           
             <Form.Group id="last-name">
               <Form.Control
                 type="text"
@@ -93,6 +116,7 @@ export default function UpdateProfile() {
                 required
               />
             </Form.Group>
+
             <Form.Group id="password">
               <Form.Control
                 type="password"
@@ -101,6 +125,7 @@ export default function UpdateProfile() {
                 name="password"
                 ref={passwordRef}
               />
+              <Form.Text className="text-pw">Password </Form.Text>
             </Form.Group>
             <Form.Group id="password-confirmation">
               <Form.Control
@@ -111,14 +136,15 @@ export default function UpdateProfile() {
                 ref={passwordConfirmationRef}
               />
             </Form.Group>
-            <Button type="submit" className="signup-btn" disabled={loading}>
+            <Form.Text className="text-pw">Password</Form.Text>
+            <Button type="submit" className="update-btn" disabled={loading}>
               Update
             </Button>
           </Form>
         </Card.Body>
       </Card>
-      <div className="signup-link">
-        <Link to="/" className="login-link">
+      <div className="update-link">
+        <Link to="/" className="cancel-link">
           Cancel
         </Link>
       </div>

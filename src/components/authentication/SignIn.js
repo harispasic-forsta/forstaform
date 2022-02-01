@@ -1,7 +1,6 @@
 import { Form, Card, Button, Alert } from "react-bootstrap";
 import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth } from "../../config/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import "./SignIn.css";
 
@@ -24,7 +23,6 @@ export default function SignIn() {
     } catch {
       setError("Failed to log in");
     }
-
     setLoading(false);
   }
 

@@ -31,7 +31,7 @@ export default function SignOut() {
             <Link to="/update-profile" className="btn btn-primary mt-10">
               Update Profile
             </Link>
-            <Button className="signout-btn" onClick={handleLogout}>
+            <Button  className="signout-btn" onClick={handleLogout}>
               {" "}
               Log Out{" "}
             </Button>

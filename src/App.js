@@ -10,7 +10,6 @@ import SignUp from "./components/authentication/SignUp";
 import SignIn from "./components/authentication/SignIn";
 import ForgotPassword from "./components/authentication/ForgotPassword";
 import { AuthProvider } from "./components/contexts/AuthContext";
-import PrivateRoute from "./components/PrivateRoute";
 import UpdateProfile from "./components/authentication/UpdateProfile";
 import SignOut from "./components/authentication/SignOut";
 
@@ -23,14 +22,14 @@ function App() {
           <AuthProvider>
             <Navbar />
             <Routes>
-                <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/update-profile" element={<UpdateProfile />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/cc-library" element={<CCLibrary />} />
               <Route path="/add-cc-to-library" element={<AddCCtoLibrary />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/" element={<SignIn />} />
               <Route path="/signout" element={<SignOut />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/update-profile" element={<UpdateProfile />} />
             </Routes>
           </AuthProvider>
         </Router>

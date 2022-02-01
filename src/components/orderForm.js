@@ -32,6 +32,7 @@ function OrderForm() {
   const [disableSave, setDisableSave] = useState(true);
   const [show, setShow] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+   const [showTagSuccessMessage, setTagShowSuccessMessage] = useState(false);
 
   const storage = getStorage();
 
@@ -58,7 +59,6 @@ function OrderForm() {
 
       console.log("setting the list in our variable allTags");
       setAllTags(allTagsFromDB);
-
       console.log("Now allTags has following values : ");
       console.log(allTagsFromDB);
     } catch (e) {
@@ -96,6 +96,7 @@ function OrderForm() {
       });
     });
     SaveNameTag(tagName);
+    loadAllTagsFromDatabase();
   };
 
   /* End of adding new tags */
@@ -113,6 +114,7 @@ function OrderForm() {
         Subject: subject,
         URL: url,
         Tags: tagSelectBox,
+
       };
 
       const db = getFirestore();
@@ -181,6 +183,7 @@ function OrderForm() {
       console.log("Show error messages");
     } else {
       saveTagNames();
+      setTagShowSuccessMessage(true);
     }
   }
 
@@ -215,7 +218,7 @@ function OrderForm() {
               label="URL"
               name="URL"
               required
-              className="URL-input-field"
+              className="input-field"
               helperText={
                 url.length > 0 || skipUrlValidation ? "" : "Please enter URL"
               }
@@ -240,7 +243,7 @@ function OrderForm() {
               label="Project"
               name="Project"
               required
-              className="Project-input-field"
+              className="input-field"
               helperText={
                 project.length > 0 || skipProjectValidation
                   ? ""
@@ -268,7 +271,7 @@ function OrderForm() {
               id="report"
               label="Report"
               name="Report"
-              className="Report-input-field"
+              className="input-field"
               onChange={(newValue) => {
                 setReport(newValue);
               }}
@@ -289,7 +292,7 @@ function OrderForm() {
               name="Slide"
               type="text"
               min="1"
-              className="Slide-input-field"
+              className="input-field"
               onChange={(newValue) => {
                 setSlide(newValue);
               }}
@@ -311,7 +314,7 @@ function OrderForm() {
               label="Subject"
               name="Subject"
               required
-              className="Subject-input-field"
+              className="input-field"
               helperText={
                 subject.length > 0 || skipSubjectValidation
                   ? ""
@@ -341,7 +344,7 @@ function OrderForm() {
               label="Request"
               name="Request"
               required
-              className="Request-input-field"
+              className="input-field"
               helperText={
                 request.length > 0 || skipRequestValidation
                   ? ""
@@ -433,7 +436,10 @@ function OrderForm() {
                 </button>
               </div>
             ) : null}
-          </div>
+          </div>           
+          {showTagSuccessMessage && (
+            <div className="success-message">Tag added successfully</div>
+          )}
         </Col>
       </Row>
       <Row>

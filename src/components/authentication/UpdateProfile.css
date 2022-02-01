@@ -1,4 +1,4 @@
-.login{
+.update-profile{
     max-width: 400px;
     width: 100%;
     padding: 12px 20px;
@@ -9,35 +9,23 @@
     margin-top: 60px;
 }
 
-.login-body {
-    flex: 1 1 auto;
-    padding: 1rem 1rem;
-}
-
-.email-box {
+.inner-text{
     margin-bottom: 15px;
 }
 
-.login-btn{
+.update-btn{
     margin-top: 10px;
 }
 
-.login-links{
+.update-link {
     padding: 10px 10px;
     border: none;
     cursor: pointer;
     width: 100%;
-    align-items: center; 
-}
-
-.forgotpwbtn {
-    text-decoration: none;
     align-items: center;
-    justify-content: center;
-    display: flex;
-    padding: 8px 8px;
 }
 
-.signupbtn {
+.cancel-link {
     text-decoration: none;
+    margin-left: 5px;
 }
