@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Form, Card, Button, Alert } from "react-bootstrap";
 import { getFirestore } from "firebase/firestore";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, setDoc, doc } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "./SignUp.css";
@@ -10,11 +10,8 @@ export default function SignUp() {
   const [signupFirstName, setSignupFirstName] = useState("");
   const [signupLastName, setSignupLastName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
-  const [signupUserName, setSignupUserName] = useState("");
-  const firstNameRef = useRef();
-  const lastNameRef = useRef();
+  const [signupAdress, setSignupAdress] = useState("");
   const emailRef = useRef();
-  const userNameRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmationRef = useRef();
   const { signup } = useAuth();
@@ -34,13 +31,13 @@ export default function SignUp() {
       setLoading(true);
       await signup(
         emailRef.current.value,
-        firstNameRef.current.value,
-        lastNameRef.current.value,
-        userNameRef.current.value,
         passwordRef.current.value,
         passwordConfirmationRef.current.value
-      );
-      saveUserData();
+      ).then((result) => {
+        console.log(result.user.uid)
+        saveUserData(result.user.uid);
+
+      })
       navigate("/dashboard");
     } catch {
       setError("Failed to create an account");
@@ -48,20 +45,19 @@ export default function SignUp() {
     setLoading(false);
   }
 
-  async function saveUserData() {
-    console.log();
-
+  async function saveUserData(userUid) {
+    console.log(userUid);
+ 
     try {
       let userData = {
         FirstName: signupFirstName,
         LastName: signupLastName,
         Email: signupEmail,
-        UserName: signupUserName,
+        Adress: signupAdress,
       };
 
       const db = getFirestore();
-      const responseData = await addDoc(collection(db, "Users"), userData);
-      console.log("Document written with ID: ", responseData.id);
+      await setDoc(doc(db, "Users", userUid), userData);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -82,7 +78,7 @@ export default function SignUp() {
                 className="inner-text"
                 placeholder="First Name"
                 required
-                ref={firstNameRef}
+                value={signupFirstName}
                 onChange={(e) => {
                   setSignupFirstName(e.target.value);
                 }}
@@ -95,7 +91,7 @@ export default function SignUp() {
                 className="inner-text"
                 placeholder="Last Name"
                 required
-                ref={lastNameRef}
+                value={signupLastName}
                 onChange={(e) => {
                   setSignupLastName(e.target.value);
                 }}
@@ -113,16 +109,16 @@ export default function SignUp() {
                 }}
               />
             </Form.Group>
-            <Form.Group id="user-name">
+            <Form.Group id="Adress">
               <Form.Control
                 type="text"
                 className="inner-text"
-                placeholder="User Name"
-                name="userName"
-                ref={userNameRef}
+                placeholder="Adress"
+                name="Adress"
                 required
+                value={signupAdress}
                 onChange={(e) => {
-                  setSignupUserName(e.target.value);
+                  setSignupAdress(e.target.value);
                 }}
               />
             </Form.Group>

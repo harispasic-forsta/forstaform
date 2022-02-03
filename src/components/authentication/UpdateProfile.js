@@ -2,43 +2,44 @@ import React, { useState, useRef, useEffect } from "react";
 import { Form, Card, Button, Alert } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { collection, getDocs, getFirestore, query, where } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  onSnapshot
+} from "firebase/firestore";
 import "./UpdateProfile.css";
 
 export default function UpdateProfile() {
-  const firstNameRef = useRef();
-  const lastNameRef = useRef();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [adress, setAdress]= useState("");
   const emailRef = useRef();
-  const userNameRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmationRef = useRef();
   const { currentUser, updateEmail, updatePassword } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [singleDoc, setSingleDoc] = useState({});
-
+  const[userData, setUserData] = useState("")
 
   useEffect(() => {
-    console.log("useEffect called. Line 39.");
-    updateData();
+    fetchUserData()
     }, []);
 
 
-async function updateData() {
+async function fetchUserData() {
   const db = getFirestore();
-  const q  = query (collection(db, "Users"), where("email", "==", emailRef.current.value));
-  const querySnapshot =  await getDocs(q) 
-   querySnapshot.forEach((doc) => {
-    console.log(doc.id, " => ", doc.data());
+  const docRef = doc(db,'Users', currentUser.uid)
+  onSnapshot(docRef, (doc) => {
+    let userData= doc.data()
+    setUserData(userData)
   })
-  ;}
-  
+}
 
   let navigate = useNavigate();
 
   function handleSubmit(e) {
     e.preventDefault();
-      
     if (passwordRef.current.value !== passwordConfirmationRef.current.value) {
       return setError("Passwords do not match");
     }
@@ -46,10 +47,6 @@ async function updateData() {
     const promises = [];
     setLoading(true);
     setError("");
-
-    if (emailRef.current.value !== currentUser.email) {
-      promises.push(updateEmail(emailRef.current.value));
-    }
 
     if (passwordRef.current.value) {
       promises.push(updatePassword(passwordRef.current.value));
@@ -69,7 +66,7 @@ async function updateData() {
 
   return (
     <>
-      <Card id='update-profile-id' className="update-profile">
+      <Card id="update-profile-id" className="update-profile">
         <Card.Body>
           <h2 className="text-center mb-4">Update Profile</h2>
           {error && <Alert variant="danger">{error}</Alert>}
@@ -80,20 +77,25 @@ async function updateData() {
                 name="firstName"
                 className="inner-text"
                 placeholder="First Name"
-                required 
-                ref={firstNameRef} 
-                defaultValue={currentUser.FirstName} 
-              /> 
+                name="firstName"
+                required
+                value={userData.FirstName}
+                onChange={(e) => {
+                  setFirstName(e.target.value);
+                }}              />
             </Form.Group>
-           
             <Form.Group id="last-name">
               <Form.Control
                 type="text"
                 name="lastName"
                 className="inner-text"
                 placeholder="Last Name"
+                name="lastName"
                 required
-                ref={lastNameRef}
+                value={userData.LastName}
+                onChange={(e) => {
+                  setLastName(e.target.value)
+                }}
               />
             </Form.Group>
             <Form.Group id="email">
@@ -101,19 +103,26 @@ async function updateData() {
                 type="email"
                 className="inner-text"
                 placeholder="Email"
+                name="email"
                 required
-                ref={emailRef}
-                defaultValue={currentUser.email}
+                value={userData.Email}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                }}
               />
             </Form.Group>
-            <Form.Group id="user-name">
+            <Form.Group id="adress">
               <Form.Control
                 type="text"
                 className="inner-text"
-                placeholder="User Name"
-                name="userName"
-                ref={userNameRef}
+                placeholder="Adress"
+                name="adress"
+                name="adress"
                 required
+                value={userData.Adress}
+                onChange={(e) => {
+                  setAdress(e.target.value)
+                }}
               />
             </Form.Group>
 
@@ -136,8 +145,8 @@ async function updateData() {
                 ref={passwordConfirmationRef}
               />
             </Form.Group>
-            <Form.Text className="text-pw">Password</Form.Text>
-            <Button type="submit" className="update-btn" disabled={loading}>
+            <Form.Text className="text-pw">Repeat Password</Form.Text>
+            <Button type="button" className="update-btn" disabled={loading}>
               Update
             </Button>
           </Form>

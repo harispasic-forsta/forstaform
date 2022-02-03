@@ -1,7 +1,10 @@
-.CCLibrary
-{
-        background-position: center;
-background-size: fill;
-background-repeat: no-repeat;
-color: #fff;
-font-size: 5rem;}
+.CC-Table {
+  background-color: white;
+  margin-top: 50px;
+  width: 100%;
+  height: 100vh;
+}
+
+.CC-Library-title {
+  padding: 5px;
+}

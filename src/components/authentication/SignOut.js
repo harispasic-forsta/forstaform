@@ -14,10 +14,10 @@ export default function SignOut() {
 
     try {
       await logout();
-      navigate("/");
+    navigate("/");
     } catch {
       setError("Failed to log out");
-    }
+    }  
   }
 
   return (
@@ -31,7 +31,7 @@ export default function SignOut() {
             <Link to="/update-profile" className="btn btn-primary mt-10">
               Update Profile
             </Link>
-            <Button  className="signout-btn" onClick={handleLogout}>
+            <Button type="button" className="signout-btn" onClick={handleLogout}>
               {" "}
               Log Out{" "}
             </Button>

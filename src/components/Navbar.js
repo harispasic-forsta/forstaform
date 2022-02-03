@@ -7,45 +7,46 @@ import { IconContext } from "react-icons";
 import * as AiIcons from "react-icons/ai";
 import { BsBell } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
-import Dropdown from "./Dropdown";
 import { MenuItems } from './MenuItems';
-
+import { NotificationMenuItems } from './NotificationMenuItems';
+import { useAuth } from "../components/contexts/AuthContext"
+import forstaLogo from './images/forstaLogo.jpg'
 
 export default function Navbar() {
   const [sidebar, setSidebar] = useState(false);
   const [click, setClick] = useState(false);
   const [dropdown, setDropdown] = useState(false);
+  const [notificationDropdown, setNotificationDropdown] = useState(false)
 
   const showSidebar = () => setSidebar(!sidebar);
   const showDropdown = () => setDropdown(!dropdown)
+  const showNotificationDropdown = () => setNotificationDropdown(!notificationDropdown)
   const closeMobileMenu = () => setClick(false);
-
-  /*useEffect(() => {
-    document.addEventListener('mousedown', () => {
-      setDropdown(true)
-    }) 
-  })*/
-
-
+  const { currentUser } = useAuth();
+  console.log(currentUser)
 
   return (
     <>
       <IconContext.Provider value={{ color: "black" }}>
         <nav className="navbar">
           <Link to="#" className="menu-bars">
-            <FaIcons.FaBars className="hamburger" onClick={showSidebar} />
+            {currentUser &&<FaIcons.FaBars className="hamburger" onClick={showSidebar} />}
           </Link>
+        
           <div className="nav-title">
+       <div><img className="Forsta-logo"
+            src={forstaLogo}
+            /></div>
             <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
-              CC Library  
-
+               CC Library    
             </Link>
           </div>
           <div>
+          {currentUser && 
             <ul className={click ? "Nav-menu active" : "Nav-menu"}>
               <li className="nav-item">
                 <Link to="#" className="nav-links" onClick={closeMobileMenu}  >
-                  <BsBell />
+                  <BsBell  onClick={showNotificationDropdown}/>
                 </Link>
               </li>
               <li
@@ -59,12 +60,13 @@ export default function Navbar() {
                 </Link>
               </li>
             </ul>
+          }
           </div>
         </nav>
         <nav>
         <ul
         onClick={showDropdown}
-        className={dropdown ? 'dropdown-menu clicked' : 'dropdown-menu'}
+        className={!dropdown ? 'dropdown-menu clicked' : 'dropdown-menu'}
       >
         {MenuItems.map((item, index) => {
           return (
@@ -72,8 +74,31 @@ export default function Navbar() {
               <Link
                 className={item.cName}
                 to={item.path}
+                onClick={() => setDropdown(true)}
               >
-                {item.title}
+                {item.icon}
+                <span className="dropdown-span">{item.title}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+        </nav>
+        <nav>
+        <ul
+        onClick={showNotificationDropdown}
+        className={!notificationDropdown ? 'dropdown-notification clicked' : 'dropdown-notification'}
+      >
+        {NotificationMenuItems.map((item, index) => {
+          return (
+            <li key={index} >
+              <Link
+                className={item.cName}
+                to={item.path}
+                onClick={() => setNotificationDropdown(false)}
+              >
+                {item.icon}
+                <span className="dropdownNotification-span">{item.title}</span>
               </Link>
             </li>
           );
@@ -81,6 +106,7 @@ export default function Navbar() {
       </ul>
         </nav>
         <nav className={sidebar ? "sidebar-menu active" : "sidebar-menu"}>
+        {currentUser &&
           <ul className="sidebar-menu-items" onClick={showSidebar}>
             <li className="sidebar-toggle">
               <Link to="#" className="menu-bars">
@@ -92,12 +118,13 @@ export default function Navbar() {
                 <li key={index} className={item.cName}>
                   <Link to={item.path}>
                     {item.icon}
-                    <span>{item.title}</span>
+                    <span className="sidebar-span">{item.title}</span>
                   </Link>
                 </li>
               );
             })}
           </ul>
+        }
         </nav>
       </IconContext.Provider>
     </>

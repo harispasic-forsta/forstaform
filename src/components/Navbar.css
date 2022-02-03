@@ -14,11 +14,11 @@
   position: absolute;
 }
 
-.menu-bars .hamburger{
-  margin-left: 220px;
+.menu-bars .hamburger {
+  margin-left: 320px;
 }
 
-.menu-bars .close{
+.menu-bars .close {
   margin-left: 200px;
 }
 
@@ -38,9 +38,16 @@
   cursor: pointer;
   font-size: 2rem;
   text-decoration: none;
+  margin-left: 10px;
   width: 10rem;
-  margin-left: 20px;
   list-style: none;
+}
+
+.Forsta-logo {
+  width: 146px;
+    height: 46px;
+    border-radius: 50%;
+    overflow: hidden;
 }
 
 .Nav-menu {
@@ -71,7 +78,6 @@
   transition: all 0.2s ease-out;
 }
 
-
 .sidebar-menu {
   background-color: whitesmoke;
   width: 280px;
@@ -84,16 +90,11 @@
   left: -100%;
   transition: 850ms;
   z-index: 999;
-  border-left: 15px solid whitesmoke;
-  box-sizing: initial;
   transform: width 0.5s;
   box-shadow: 0 10px 40px 0 rgba(58, 54, 54, 0.2);
 }
 
-.sidebar-menu ul{
-  position: absolute;
-  top:0;
-  left:0;
+.sidebar-menu ul {
   width: 100%;
   padding-left: 5px;
   padding-top: 10px;
@@ -128,6 +129,10 @@
   transition: 350ms;
 }
 
+.sidebar-span {
+  margin-left: 16px;
+}
+
 .nav-text {
   display: flex;
   justify-content: start;
@@ -141,13 +146,13 @@
   text-decoration: none;
   color: black;
   font-size: 1.4em;
-  width: 95%;
+  width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: left;
-  padding: 0 16px;
-  border-radius: 4px;
+  padding: 5px 16px;
+  border-radius: 7px;
 }
 
 .sidebar-menu-items {
@@ -157,6 +162,83 @@
 .nav-text a:hover {
   background-color: rgb(252, 252, 252);
 }
-span {
-  margin-left: 16px;
+
+.dropdown-menu {
+  background: whitesmoke;
+  width: 150px;
+  top: 80px;
+  list-style: none;
+  text-align: start;
+  display: inline-block;
+  right: 10px;
+  margin-top: 10px;
+  margin-right: 50px;
+  box-shadow: 0 2px 4px 0 rgba(68, 66, 66, 0.2);
+  z-index: 1;
+}
+
+.dropdown-menu li {
+  background: whitesmoke;
+  cursor: pointer;
+  color: black;
+}
+
+.dropdown-menu li:hover {
+  background: rgb(252, 252, 252);
+  border-radius: 10px;
+}
+
+.dropdown-menu.clicked {
+  display: none;
+}
+
+.dropdown-link {
+  text-decoration: none;
+  color: black;
+  display: block;
+  padding: 8px 0px 8px 16px;
+  list-style: none;
+  height: 100%;
+  width: 100%;
+}
+
+.dropdown-span {
+  list-style: none;
+  text-decoration: none;
+  margin-left: 10px;
+}
+
+.dropdown-notification{
+  background: whitesmoke;
+  width: 250px;
+  height: 5vh;
+  list-style: none;
+  text-align: start;
+  margin-top: 10px;
+  float: right;
+  margin-right: 150px;
+  box-shadow: 0px 2px 8px 0px rgba(68, 66, 66, 0.2);
+  padding: 5px;
+}
+
+.dropdown-notification li {
+  background: whitesmoke;
+  cursor: pointer;
+  color: black;
+  margin-top: 5px;
+}
+
+.dropdown-notification li:hover {
+  background: rgb(252, 252, 252);
+  border-radius: 10px;
+}
+
+.dropdown-notification.clicked{
+  display: none;
+}
+
+.dropdownNotification-span {
+  list-style: none;
+  text-decoration: none;
+  margin-left: 10px;
 }

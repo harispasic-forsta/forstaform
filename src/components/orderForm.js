@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './OrderForm.css'
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Row, Col, Form, FormGroup } from "react-bootstrap";
+import { Container, Row, Col, Form, FormGroup} from "react-bootstrap";
 import TextField from "@confirmit/react-text-field";
 import Select from "@confirmit/react-select";
 import firebase from "../config/firebase";
@@ -34,33 +34,27 @@ function OrderForm() {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
    const [showTagSuccessMessage, setTagShowSuccessMessage] = useState(false);
 
+  
+    
+
   const storage = getStorage();
 
-  /* Solution for loading tags Start*/
   const [allTags, setAllTags] = useState([]);
 
   useEffect(() => {
-    console.log("useEffect called. Line 39.");
     loadAllTagsFromDatabase();
   }, []);
 
   async function loadAllTagsFromDatabase() {
-    console.log("loadAllTagsFromDatabase function called.");
     try {
       let allTagsFromDB = [];
       const db = getFirestore();
-      console.log("connecting and getting the collection Tags...");
       const querySnapshot = await getDocs(collection(db, "Tags"));
       querySnapshot.forEach((doc) => {
-        console.log("tag found in database, adding the tag to list");
-        console.log(doc.data());
         allTagsFromDB.push(doc.data());
       });
 
-      console.log("setting the list in our variable allTags");
       setAllTags(allTagsFromDB);
-      console.log("Now allTags has following values : ");
-      console.log(allTagsFromDB);
     } catch (e) {
       console.error("Error loading document: ", e);
     }
@@ -77,27 +71,22 @@ function OrderForm() {
       };
 
       const db = getFirestore();
-      const responseData = await addDoc(collection(db, "Tags"), tagData);
-      console.log("Document written with ID: ", responseData.id);
+      const responseData = await addDoc(collection(db, "Tags"), tagData).then((result)=> {
+        loadAllTagsFromDatabase();
+        let tagSelectionCopy=[...tagSelectBox]
+        tagSelectionCopy.push({
+          label: tagName,
+          value:  tagName
+        })
+        setTagSelectBox(tagSelectionCopy)
+        console.log(tagSelectionCopy)
+        console.log("Document written with ID: ", result.id);
+      })
+      
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   }
-
-  const saveTagNames = (e) => {
-    let tagName = [];
-    attachments.forEach((element) => {
-      let uniqueName = parseInt(Math.random() * 100000) + element.name;
-      tagName.push(uniqueName);
-      const storageRef = ref(storage, uniqueName);
-      uploadBytes(storageRef, element).then((snapshot) => {
-        console.log("Upload done");
-        console.log(snapshot);
-      });
-    });
-    SaveNameTag(tagName);
-    loadAllTagsFromDatabase();
-  };
 
   /* End of adding new tags */
 
@@ -146,6 +135,7 @@ function OrderForm() {
 
   /* End of adding files */
 
+
   async function submitFormData() {
     if (checkRequiredFields()) {
       console.log("Show error messages");
@@ -182,7 +172,7 @@ function OrderForm() {
     if (checkAddedTags()) {
       console.log("Show error messages");
     } else {
-      saveTagNames();
+      SaveNameTag();
       setTagShowSuccessMessage(true);
     }
   }
@@ -206,6 +196,7 @@ function OrderForm() {
 
   return (
     <Container className="Form">
+     <h2 className="form-title">CC Library Form</h2>
       <Row>
         <Col>
           <FormGroup controlId="formURL">
@@ -438,7 +429,12 @@ function OrderForm() {
             ) : null}
           </div>           
           {showTagSuccessMessage && (
-            <div className="success-message">Tag added successfully</div>
+            <div>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Tag added successfully</strong> 
+            <button type="button" class="btn-close" data-bs-dismiss="alert"  ></button>
+        </div> 
+         </div>      
           )}
         </Col>
       </Row>
@@ -476,7 +472,12 @@ function OrderForm() {
         </button>
       </div>
       {showSuccessMessage && (
-        <div className="success-message">Submitted successfully</div>
+        <div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Submitted successfully</strong> 
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div> 
+     </div> 
       )}
     </Container>
   );
