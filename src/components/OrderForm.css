@@ -15,6 +15,18 @@ text-align: center;
   padding-left: 0;
 }
 
+.input-field .InputWrapper_comd-input-wrapper__label--active__dJUOb {
+  border-radius: 10px;
+  max-width: 100%;
+  opacity: 1px;
+  display: flex;
+  align-items: center;
+  background: white;
+  z-index: 9;
+  padding: 3px;
+  bottom: 30px;
+  }
+
 .attachmentsBlock {
   height: 128px;
   padding: 0%;
@@ -52,7 +64,18 @@ text-align: center;
 .tagNameBox {
   display: flex;
   width: 70%;
-  justify-content: center;
+}
+
+.tagNameBox .InputWrapper_comd-input-wrapper__label--active__dJUOb{
+  border-radius: 10px;
+  max-width: 100%;
+  opacity: 1px;
+  display: flex;
+  align-items: center;
+  background: white;
+  z-index: 9;
+  padding: 3px;
+  bottom: 30px;
 }
 
 .SelectBox .chip_co-chip__pWcis {
@@ -66,6 +89,7 @@ text-align: center;
   padding: 5px 20px;
   color: white;
 }
+
 .SelectBox .comd-react-select__value-container > span{
   margin-right: 10px;
   position: relative;

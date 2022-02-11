@@ -1,0 +1,244 @@
+import React, { useState, useEffect } from "react";
+import { Container } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import {
+  getFirestore,
+  onSnapshot,
+  collection,
+} from "firebase/firestore";
+import "../../App.css";
+import "./CCLibrary.css";
+
+export default function CCLibrary() {
+  const [url, setUrl] = useState("");
+  const [project, setProject] = useState("");
+  const [report, setReport] = useState("");
+  const [slide, setSlide] = useState("");
+  const [subject, setSubject] = useState("");
+  const [request, setRequest] = useState("");
+  const [tagSelectBox, setTagSelectBox] = useState("");
+  const [attachments, setAttachments] = useState([]);
+  const [tableData, setTableData] = useState([]);
+
+
+
+  useEffect(() => {    
+    const db = getFirestore();
+    return onSnapshot(collection(db, 'Orders'), (snapshot) => {
+      setTableData(snapshot.docs.map((doc => doc.data())))
+    })
+  }, []);
+
+
+  
+
+
+  return (
+    <>
+      <Container className="CC-Table">
+        <h2 className="CC-Library-title">CC Library</h2>
+        <table className="table table-hover table-responsive table-bordered">
+          <thead>
+            <tr id="table-data" >
+              <th scope="col">#</th>
+              <th 
+                scope="col"
+                value={url}
+                onChange={(e) => {
+                  setUrl(e.target.value);
+                }}
+              >
+                URL
+              </th>
+              <th
+                scope="col"
+                value={project}
+                onChange={(e) => {
+                  setProject(e.target.value);
+                }}
+              >
+                Project
+              </th>
+              <th
+                scope="col"
+                value={report}
+                onChange={(e) => {
+                  setReport(e.target.value);
+                }}
+              >
+                Report
+              </th>
+              <th
+                scope="col"
+                value={slide}
+                onChange={(e) => {
+                  setSlide(e.target.value);
+                }}
+              >
+                Slide
+              </th>
+              <th
+                scope="col"
+                value={subject}
+                onChange={(e) => {
+                  setSubject(e.target.value);
+                }}
+              >
+               Subject
+              </th>
+               <th
+                scope="col"
+                value={request}
+                onChange={(e) => {
+                  setRequest(e.target.value);
+                }}
+              >
+                Request
+              </th>
+              <th
+                scope="col"
+                value={tagSelectBox}
+                onChange={(e) => {
+                  setTagSelectBox(e.target.value);
+                }}
+              >
+                Tags
+              </th>
+              <th scope="col">Attachmment</th>
+            </tr>
+          </thead>
+          <tbody>
+          {tableData.map((tableData) => (
+                   <tr >
+              <th  scope="row"></th>
+              <td>{tableData.URL}</td>
+              <td>{tableData.Project}</td>
+              <td>{tableData.Report}</td>
+              <td>{tableData.Slide}</td>
+              <td>{tableData.Subject}</td>
+              <td>{tableData.Request}</td>
+              <td>{tableData.tagSelectBox}</td>
+            </tr>
+          ))}
+          </tbody>
+        </table>
+      </Container>
+    </>
+  );
+}
+
+
+import React, { useState, useEffect, useMemo } from "react";
+import { Container } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import {
+  getFirestore,
+  onSnapshot,
+  collection,
+} from "firebase/firestore";
+import Table from "@confirmit/react-table";
+import "../../App.css";
+import "./CCLibrary.css";
+
+export default function CCLibrary() {
+  const [url, setUrl] = useState("");
+  const [project, setProject] = useState("");
+  const [report, setReport] = useState("");
+  const [slide, setSlide] = useState("");
+  const [subject, setSubject] = useState("");
+  const [request, setRequest] = useState("");
+  const [tagSelectBox, setTagSelectBox] = useState("");
+  const [attachments, setAttachments] = useState([]);
+  const [tableData, setTableData] = useState([]);
+
+
+
+  useEffect(() => {    
+    const db = getFirestore();
+    return onSnapshot(collection(db, 'Orders'), (snapshot) => {
+      setTableData(snapshot.docs.map((doc => doc.data())))
+    })
+  }, []);
+
+
+  const [data, setData] = useState([{
+    id: 1,
+    url: 'Michael',
+    project:
+      'really long string really long string really long string really long string ',
+    report: 'string string string',
+    slide: 'string string string',
+  },
+  {
+    id: 2,
+    url: 'Scottie',
+    project: 'really long string really long string ',
+    report: 'string string string',
+    slide: 'string string string',
+  },]);
+    
+  const columns = useMemo(
+          () => [
+            {
+              Header: 'Id',
+              accessor: 'id',
+              width: 40,
+              isFixedWidth: true,
+            },
+            {
+              Header: 'URL',
+              accessor: 'url',
+                
+            },
+            {
+              Header: 'Project',
+              accessor: 'project',
+            },
+            {
+              Header: 'Report',
+              accessor: 'report',
+            },
+            {
+              Header: 'Slide',
+              accessor: 'slide',
+            },
+         {
+              Header: 'Subject',
+              accessor: 'extraColumn4',
+            }, 
+            {
+              Header: 'Request',
+              accessor: 'extraColumn5',
+            }, 
+            {
+              Header: 'Tags',
+              accessor: 'extraColumn6',
+            },
+            {
+              Header: 'Attachments',
+              accessor: 'extraColumn7',
+            },
+        
+          ],
+          []
+        );
+
+  return (
+    <>
+      <Container className="CC-Table">
+        <h2 className="CC-Library-title">CC Library</h2>
+            <Table
+              content={
+                <Table.Content
+                  columns={columns}
+                  data={data}
+                />
+              }
+            >
+            </Table>
+        );
+      
+      </Container>
+    </>
+  );
+}

@@ -21,6 +21,7 @@ export default function UpdateProfile() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const[userData, setUserData] = useState("")
+  let navigate = useNavigate();
 
   useEffect(() => {
     fetchUserData()
@@ -36,7 +37,6 @@ async function fetchUserData() {
   })
 }
 
-  let navigate = useNavigate();
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -47,6 +47,10 @@ async function fetchUserData() {
     const promises = [];
     setLoading(true);
     setError("");
+
+    if (email.current.value) {
+      promises.push(updateEmail(email.current.value));
+    }
 
     if (passwordRef.current.value) {
       promises.push(updatePassword(passwordRef.current.value));
@@ -70,7 +74,7 @@ async function fetchUserData() {
         <Card.Body>
           <h2 className="text-center mb-4">Update Profile</h2>
           {error && <Alert variant="danger">{error}</Alert>}
-          <Form id="signup-form" onSubmit={handleSubmit}>
+          <Form id="update-profile-form" >
             <Form.Group id="first-name">
               <Form.Control
                 type="text"
@@ -81,7 +85,7 @@ async function fetchUserData() {
                 required
                 value={userData.FirstName}
                 onChange={(e) => {
-                  setFirstName(e.target.value);
+                  setUserData(e.target.value);
                 }}              />
             </Form.Group>
             <Form.Group id="last-name">
@@ -94,7 +98,7 @@ async function fetchUserData() {
                 required
                 value={userData.LastName}
                 onChange={(e) => {
-                  setLastName(e.target.value)
+                  setUserData(e.target.value)
                 }}
               />
             </Form.Group>
@@ -107,7 +111,7 @@ async function fetchUserData() {
                 required
                 value={userData.Email}
                 onChange={(e) => {
-                  setEmail(e.target.value)
+                  setUserData(e.target.value)
                 }}
               />
             </Form.Group>
@@ -121,7 +125,7 @@ async function fetchUserData() {
                 required
                 value={userData.Adress}
                 onChange={(e) => {
-                  setAdress(e.target.value)
+                  setUserData(e.target.value)
                 }}
               />
             </Form.Group>
@@ -146,7 +150,7 @@ async function fetchUserData() {
               />
             </Form.Group>
             <Form.Text className="text-pw">Repeat Password</Form.Text>
-            <Button type="button" className="update-btn" disabled={loading}>
+            <Button type="button" onSubmit={handleSubmit} className="update-btn" disabled={loading}>
               Update
             </Button>
           </Form>

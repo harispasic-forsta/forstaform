@@ -23,7 +23,13 @@ export default function Navbar() {
   const showNotificationDropdown = () => setNotificationDropdown(!notificationDropdown)
   const closeMobileMenu = () => setClick(false);
   const { currentUser } = useAuth();
-  console.log(currentUser)
+
+  // useEffect(() => {
+  //   document.addEventListener('mousedown', () => {
+  //     setDropdown(true)
+  //   }) 
+  // })
+
 
   return (
     <>
@@ -32,11 +38,11 @@ export default function Navbar() {
           <Link to="#" className="menu-bars">
             {currentUser &&<FaIcons.FaBars className="hamburger" onClick={showSidebar} />}
           </Link>
-        
           <div className="nav-title">
        <div><img className="Forsta-logo"
-            src={forstaLogo}
-            /></div>
+            src={forstaLogo} 
+            />
+            </div>
             <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
                CC Library    
             </Link>

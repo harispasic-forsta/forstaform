@@ -33,12 +33,7 @@ function OrderForm() {
   const [show, setShow] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
    const [showTagSuccessMessage, setTagShowSuccessMessage] = useState(false);
-
-  
-    
-
   const storage = getStorage();
-
   const [allTags, setAllTags] = useState([]);
 
   useEffect(() => {
@@ -95,7 +90,7 @@ function OrderForm() {
 
     try {
       let orderData = {
-        Attachmments: fileNames,
+        Attachments: fileNames,
         Project: project,
         Report: report,
         Request: request,
@@ -103,7 +98,6 @@ function OrderForm() {
         Subject: subject,
         URL: url,
         Tags: tagSelectBox,
-
       };
 
       const db = getFirestore();
@@ -199,6 +193,7 @@ function OrderForm() {
      <h2 className="form-title">CC Library Form</h2>
       <Row>
         <Col>
+        <fieldset>
           <FormGroup controlId="formURL">
             <Form.Text className="text-muted">
               Dapresy server where this should be implemented
@@ -223,6 +218,7 @@ function OrderForm() {
               error={url.length > 0 || skipUrlValidation ? false : true}
             />
           </FormGroup>
+          </fieldset>
         </Col>
         <Col>
           <Form.Group controlId="formProject">
@@ -429,12 +425,10 @@ function OrderForm() {
             ) : null}
           </div>           
           {showTagSuccessMessage && (
-            <div>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <div class="alert alert-success alert-dismissible fade show shadow" role="alert" >
             <strong>Tag added successfully</strong> 
-            <button type="button" class="btn-close" data-bs-dismiss="alert"  ></button>
-        </div> 
-         </div>      
+            <button type="button" className= "btn-close"  data-bs-dismiss="alert" aria-label="Close"
+    ></button></div>
           )}
         </Col>
       </Row>
@@ -473,7 +467,7 @@ function OrderForm() {
       </div>
       {showSuccessMessage && (
         <div>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show shadow" >
         <strong>Submitted successfully</strong> 
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div> 
