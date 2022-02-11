@@ -98,8 +98,7 @@ export default function CCLibrary() {
             <div>
               {row.original.Attachments.map((attachment) => (
                 <span className="table-attachments" key={attachment}>
-                  {" "}
-                  <button onClick={handleAttachmentClick}>{attachment}</button>
+                  <button onClick={()=>{handleAttachmentClick(attachment)}}>{attachment}</button>
                 </span>
               ))}
             </div>
