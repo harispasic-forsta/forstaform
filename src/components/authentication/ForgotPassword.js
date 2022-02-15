@@ -1,26 +1,30 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Form, Card, Button, Alert } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import "./ForgotPassword.css";
 
 export default function ForgotPassword() {
-  const emailRef = useRef();
+  const [email, setEmail] = useState("");
   const { resetPassword } = useAuth();
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  let navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
 
+    setMessage("");
+    setError("");
+    setLoading(true);
+
     try {
-      setMessage("");
-      setError("");
-      setLoading(true);
-      await resetPassword(emailRef.current.value);
+      await resetPassword(email);
       setMessage("Check your inbox for further instructions");
-    } catch {
+      navigate("/");
+    } catch (e) {
+      console.log(e);
       setError("Failed to reset password");
     }
 
@@ -41,7 +45,10 @@ export default function ForgotPassword() {
                 className="inner-text"
                 placeholder="Email"
                 required
-                ref={emailRef}
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
               />
             </Form.Group>
             <div className="resetpw-btns">
@@ -49,10 +56,10 @@ export default function ForgotPassword() {
                 Reset Password
               </Button>
             </div>
-            
-              <Link to="/" className="login-link">
-                Log In
-              </Link>
+
+            <Link to="/" className="login-link">
+              Log In
+            </Link>
           </Form>
         </Card.Body>
       </Card>

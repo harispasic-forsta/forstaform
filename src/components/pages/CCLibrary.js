@@ -4,14 +4,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { getFirestore, onSnapshot, collection } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import Table from "@confirmit/react-table";
-import "../../App.css";
+import { useAuth } from "../../contexts/AuthContext";
 import "./CCLibrary.css";
 
 export default function CCLibrary() {
   const [tableData, setTableData] = useState([]);
-  const [url, setUrl] = useState("");
-  const [show, setShow] = useState(false);
   const [attachmentDownloadURL, setAttachmentDownloadURL] = useState("");
+  const { currentUser } = useAuth();
+  
 
   useEffect(() => {
     const db = getFirestore();
@@ -20,13 +20,6 @@ export default function CCLibrary() {
     });
   }, []);
 
-  //  const storage = getStorage();
-  //  const attachment= (ref(storage, attachment));
-
-  //   getDownloadURL=(attachment).then((url) => {
-  //     console.log(url)
-  //     setUrl(url)
-  // })
   const myRefname = useRef(null);
 
   function handleAttachmentClick(attachment) {
@@ -38,14 +31,6 @@ export default function CCLibrary() {
       console.log(url);
     });
   }
-
-  // const downloadURL = (attachment) => {
-  //   const storage = getStorage();
-  //   getDownloadURL(ref(storage, attachment)).then((url) => {
-  //     console.log(url)
-  //    return url;
-  //   });
-  // };
 
   const columns = useMemo(
     () => [
@@ -78,14 +63,14 @@ export default function CCLibrary() {
         accessor: "Tags",
         Cell: function tableTags({ row }) {
           return (
-            <div>
-              {row.original.Tags.map((data) => {
+            <div >
+              {row.original.Tags.map((data, index) => {
                 return (
-                  <span className="table-tag" key={data.label + Date.now()}>
+                  <span className="table-tag" key={index} >
                     {data.label}
                   </span>
                 );
-              })}
+          })}
             </div>
           );
         },
@@ -98,7 +83,14 @@ export default function CCLibrary() {
             <div>
               {row.original.Attachments.map((attachment) => (
                 <span className="table-attachments" key={attachment}>
-                  <button onClick={()=>{handleAttachmentClick(attachment)}}>{attachment}</button>
+                  <button
+                    className="attachment-btn"
+                    onClick={() => {
+                      handleAttachmentClick(attachment);
+                    }}
+                  >
+                    {attachment}
+                  </button>
                 </span>
               ))}
             </div>
@@ -112,24 +104,24 @@ export default function CCLibrary() {
 
   return (
     <>
-      <Container className="CC-Table">
+    {currentUser && <Container className="CC-Table">
         <h2 className="CC-Library-title">CC Library</h2>
         <a
           className="table-atag"
           href={attachmentDownloadURL}
           download
           ref={myRefname}
+          target="_blank"
         ></a>
-        <Table
+        <Table className="table"
           content={
             <Table.Content
               columns={columns}
               data={tableData}
-              className="table"
             />
           }
         ></Table>
-      </Container>
+      </Container>}
     </>
   );
 }

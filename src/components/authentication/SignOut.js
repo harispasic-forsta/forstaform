@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Form, Card, Button, Alert } from "react-bootstrap";
+import { Card, Button, Alert } from "react-bootstrap";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import "./SignOut.css";
 
 export default function SignOut() {
@@ -14,10 +14,10 @@ export default function SignOut() {
 
     try {
       await logout();
-    navigate("/");
+      navigate("/");
     } catch {
       setError("Failed to log out");
-    }  
+    }
   }
 
   return (
@@ -26,14 +26,17 @@ export default function SignOut() {
         <Card.Body>
           <h2 className="login-body">Profile</h2>
           {error && <Alert variant="danger">{error}</Alert>}
-          <strong>Email:</strong> {currentUser.email}
+          <strong>Email:</strong> {currentUser?.email}
           <div className="update-logout-btn">
             <Link to="/update-profile" className="btn btn-primary mt-10">
               Update Profile
             </Link>
-            <Button type="button" className="signout-btn" onClick={handleLogout}>
-              {" "}
-              Log Out{" "}
+            <Button
+              type="button"
+              className="signout-btn"
+              onClick={handleLogout}
+            >
+              Log Out
             </Button>
           </div>
         </Card.Body>

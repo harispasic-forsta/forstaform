@@ -1,71 +1,73 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Card, Button, Alert } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import {
-  getFirestore,
-  doc,
-  onSnapshot
-} from "firebase/firestore";
+import { useAuth } from "../../contexts/AuthContext";
+import { getFirestore, doc, onSnapshot, setDoc } from "firebase/firestore";
 import "./UpdateProfile.css";
 
 export default function UpdateProfile() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [adress, setAdress]= useState("");
-  const emailRef = useRef();
-  const passwordRef = useRef();
-  const passwordConfirmationRef = useRef();
+  const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const { currentUser, updateEmail, updatePassword } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const[userData, setUserData] = useState("")
+  const [userData, setUserData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    adress: "",
+  });
   let navigate = useNavigate();
 
   useEffect(() => {
-    fetchUserData()
-    }, []);
+    fetchUserData();
+  }, []);
 
+  async function fetchUserData() {
+    const db = getFirestore();
+    const docRef = doc(db, "Users", currentUser.uid);
+    onSnapshot(docRef, (doc) => {
+      let userData = doc.data();
+      setUserData(userData);
+      console.log(userData);
+    });
+  }
 
-async function fetchUserData() {
-  const db = getFirestore();
-  const docRef = doc(db,'Users', currentUser.uid)
-  onSnapshot(docRef, (doc) => {
-    let userData= doc.data()
-    setUserData(userData)
-  })
-}
-
-
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (passwordRef.current.value !== passwordConfirmationRef.current.value) {
+
+    if (password !== passwordConfirmation) {
       return setError("Passwords do not match");
     }
 
-    const promises = [];
     setLoading(true);
     setError("");
 
-    if (email.current.value) {
-      promises.push(updateEmail(email.current.value));
+    if (userData.email) {
+      updateEmail(userData.email);
     }
 
-    if (passwordRef.current.value) {
-      promises.push(updatePassword(passwordRef.current.value));
+    if (userData.password) {
+      updatePassword(userData.password);
     }
 
-    Promise.all(promises)
-      .then(() => {
-        navigate("/");
-      })
-      .catch(() => {
-        setError("Failed to update account");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      const updatedUserData = {
+        FirstName: userData.FirstName,
+        LastName: userData.LastName,
+        Email: userData.Email,
+        Adress: userData.Adress,
+      };
+
+      const db = getFirestore();
+      await setDoc(doc(db, "Users", currentUser.uid), updatedUserData);
+
+      navigate("/cc-library");
+    } catch (e) {
+      alert("Error occurred while updating user.");
+    }
+
+    setLoading(false);
   }
 
   return (
@@ -74,7 +76,7 @@ async function fetchUserData() {
         <Card.Body>
           <h2 className="text-center mb-4">Update Profile</h2>
           {error && <Alert variant="danger">{error}</Alert>}
-          <Form id="update-profile-form" >
+          <Form id="update-profile-form" onSubmit={handleSubmit}>
             <Form.Group id="first-name">
               <Form.Control
                 type="text"
@@ -85,8 +87,9 @@ async function fetchUserData() {
                 required
                 value={userData.FirstName}
                 onChange={(e) => {
-                  setUserData(e.target.value);
-                }}              />
+                  setUserData({ ...userData, FirstName: e.target.value });
+                }}
+              />
             </Form.Group>
             <Form.Group id="last-name">
               <Form.Control
@@ -98,7 +101,7 @@ async function fetchUserData() {
                 required
                 value={userData.LastName}
                 onChange={(e) => {
-                  setUserData(e.target.value)
+                  setUserData({ ...userData, LastName: e.target.value });
                 }}
               />
             </Form.Group>
@@ -111,7 +114,7 @@ async function fetchUserData() {
                 required
                 value={userData.Email}
                 onChange={(e) => {
-                  setUserData(e.target.value)
+                  setUserData({ ...userData, Email: e.target.value });
                 }}
               />
             </Form.Group>
@@ -125,7 +128,7 @@ async function fetchUserData() {
                 required
                 value={userData.Adress}
                 onChange={(e) => {
-                  setUserData(e.target.value)
+                  setUserData({ ...userData, Adress: e.target.value });
                 }}
               />
             </Form.Group>
@@ -136,7 +139,10 @@ async function fetchUserData() {
                 className="inner-text"
                 placeholder="Leave blank to keep the same"
                 name="password"
-                ref={passwordRef}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
               />
               <Form.Text className="text-pw">Password </Form.Text>
             </Form.Group>
@@ -146,18 +152,21 @@ async function fetchUserData() {
                 placeholder="Leave blank to keep the same"
                 className="inner-text"
                 name="passwordConfirmation"
-                ref={passwordConfirmationRef}
+                value={passwordConfirmation}
+                onChange={(e) => {
+                  setPasswordConfirmation(e.target.value);
+                }}
               />
             </Form.Group>
             <Form.Text className="text-pw">Repeat Password</Form.Text>
-            <Button type="button" onSubmit={handleSubmit} className="update-btn" disabled={loading}>
+            <Button type="submit" className="update-btn" disabled={loading}>
               Update
             </Button>
           </Form>
         </Card.Body>
       </Card>
       <div className="update-link">
-        <Link to="/" className="cancel-link">
+        <Link to="/cc-library" className="cancel-link">
           Cancel
         </Link>
       </div>

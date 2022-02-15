@@ -1,14 +1,7 @@
-import React from 'react';
-import * as Icons from 'react-icons/bs';
-
+import React from "react";
+import * as Icons from "react-icons/bs";
 
 export const SidebarData = [
-  {
-    title: "Dashboard",
-        path: "./dashboard",
-        cName: "nav-text",
-        icon: <Icons.BsColumnsGap />,
-  },
   {
     title: "CC Library",
     path: "./cc-library",
