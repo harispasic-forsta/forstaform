@@ -11,16 +11,25 @@
 }
 
 .table-tag {
-  border-radius: 20px;
   max-width: 100%;
-  background-color: #2d81ff;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 5px 20px;
-  color: white;
   margin-top: 5px;
   margin-bottom: 5px;
+}
+
+.tag-btn {
+  width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: white;
+  border-radius: 20px;
+  background-color: #2d81ff;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding: 6px 20px;
+  border-color: transparent;
 }
 
 .table-attachments {
@@ -30,10 +39,6 @@
   align-items: center;
   margin-top: 5px;
   margin-bottom: 5px;
-}
-
-.table-attachments .rowgroup .table_comd-table__tbody-td__h20Nz {
-  width: 250px;
 }
 
 .attachment-btn {

@@ -33,16 +33,14 @@ export function AuthProvider({ children }) {
   function resetPassword(email) {
     return sendPasswordResetEmail(auth, email);
   }
+  
+  function changePassword(email) {
+    return sendPasswordResetEmail(auth, email);
+  }
 
   function updateEmail(email) {
     console.log(currentUser);
     currentUser.email = email;
-
-    return true;
-  }
-
-  function updatePassword(password) {
-    currentUser.password = password;
 
     return true;
   }
@@ -62,8 +60,8 @@ export function AuthProvider({ children }) {
     signup,
     logout,
     resetPassword,
+    changePassword,
     updateEmail,
-    updatePassword,
   };
   return (
     <AuthContext.Provider value={value}>

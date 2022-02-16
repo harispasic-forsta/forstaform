@@ -166,7 +166,7 @@
 
 .dropdown-menu {
   background: whitesmoke;
-  width: 150px;
+  width: 175px;
   top: 80px;
   list-style: none;
   text-align: start;
@@ -212,7 +212,7 @@
 .dropdown-notification {
   background: whitesmoke;
   width: 250px;
-  height: 5vh;
+  height: 8vh;
   list-style: none;
   text-align: start;
   margin-top: 10px;

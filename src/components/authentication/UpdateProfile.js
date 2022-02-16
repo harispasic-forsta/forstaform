@@ -6,9 +6,7 @@ import { getFirestore, doc, onSnapshot, setDoc } from "firebase/firestore";
 import "./UpdateProfile.css";
 
 export default function UpdateProfile() {
-  const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
-  const { currentUser, updateEmail, updatePassword } = useAuth();
+  const { currentUser, updateEmail } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState({
@@ -35,20 +33,12 @@ export default function UpdateProfile() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
-    if (password !== passwordConfirmation) {
-      return setError("Passwords do not match");
-    }
-
+  
     setLoading(true);
     setError("");
 
     if (userData.email) {
       updateEmail(userData.email);
-    }
-
-    if (userData.password) {
-      updatePassword(userData.password);
     }
 
     try {
@@ -66,7 +56,6 @@ export default function UpdateProfile() {
     } catch (e) {
       alert("Error occurred while updating user.");
     }
-
     setLoading(false);
   }
 
@@ -132,33 +121,6 @@ export default function UpdateProfile() {
                 }}
               />
             </Form.Group>
-
-            <Form.Group id="password">
-              <Form.Control
-                type="password"
-                className="inner-text"
-                placeholder="Leave blank to keep the same"
-                name="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-              />
-              <Form.Text className="text-pw">Password </Form.Text>
-            </Form.Group>
-            <Form.Group id="password-confirmation">
-              <Form.Control
-                type="password"
-                placeholder="Leave blank to keep the same"
-                className="inner-text"
-                name="passwordConfirmation"
-                value={passwordConfirmation}
-                onChange={(e) => {
-                  setPasswordConfirmation(e.target.value);
-                }}
-              />
-            </Form.Group>
-            <Form.Text className="text-pw">Repeat Password</Form.Text>
             <Button type="submit" className="update-btn" disabled={loading}>
               Update
             </Button>

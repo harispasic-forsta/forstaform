@@ -11,6 +11,8 @@ import ForgotPassword from "./components/authentication/ForgotPassword";
 import { AuthProvider } from "./contexts/AuthContext";
 import UpdateProfile from "./components/authentication/UpdateProfile";
 import SignOut from "./components/authentication/SignOut";
+import ProfileDetails from './components/authentication/ProfileDetails'
+import ChangePassword from './components/authentication/ChangePassword'
 
 
 function App() {
@@ -27,7 +29,9 @@ function App() {
               <Route path="/" element={<SignIn />} />
               <Route path="/signout" element={<SignOut />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/change-password" element={<ChangePassword />} />
               <Route path="/update-profile" element={<UpdateProfile />} />
+              <Route path="/profile-details" element={<ProfileDetails />} />
             </Routes>
           </AuthProvider>
         </Router>

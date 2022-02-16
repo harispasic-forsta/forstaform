@@ -10,9 +10,8 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-
   const navigate = useNavigate();
+
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -25,6 +24,7 @@ export default function SignIn() {
     } catch {
       setError("Failed to log in");
     }
+    setLoading(false);
   }
 
   return (
@@ -43,7 +43,7 @@ export default function SignIn() {
                   required
                   value={email}
                   onChange={(e) => {
-                    setEmail(e.target.value);
+                    setEmail(e.target.value );
                   }}
                 />
               </Form.Group>
@@ -54,9 +54,9 @@ export default function SignIn() {
                   placeholder="Password"
                   required
                   value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
                 />
               </Form.Group>
               <Button className="login-btn" type="submit" disabled={loading}>

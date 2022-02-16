@@ -1,11 +1,11 @@
 .Form {
   margin-top: 50px;
   background-color: white;
-  height: 75vh;
+  height: 140vh;
   width: 100vw;
 }
-.form-title {
-  text-align: center;
+.form-title{
+text-align: center;
 }
 
 .input-field {
@@ -14,7 +14,7 @@
   margin-top: 10px;
 }
 
-.input-field .InputWrapper_comd-input-wrapper__label--active__dJUOb {
+.input-field > label {
   border-radius: 10px;
   max-width: 100%;
   opacity: 1px;
@@ -24,7 +24,7 @@
   z-index: 9;
   padding: 3px;
   bottom: 30px;
-}
+  }
 
 .attachmentsBlock {
   height: 128px;
@@ -65,7 +65,7 @@
   width: 70%;
 }
 
-.tagNameBox .InputWrapper_comd-input-wrapper__label--active__dJUOb {
+.tagNameBox > label {
   border-radius: 10px;
   max-width: 100%;
   opacity: 1px;
@@ -77,10 +77,10 @@
   bottom: 30px;
 }
 
-.SelectBox .chip_co-chip__pWcis {
+.SelectBox  .comd-react-select__value-container > span > div {
   border-radius: 20px;
   max-width: 100%;
-  background-color: #2d81ff;
+  background-color: #2d81ff ;
   width: 100%;
   height: 20%;
   display: flex;
@@ -89,18 +89,19 @@
   color: white;
 }
 
-.SelectBox .comd-react-select__value-container > span {
+.SelectBox .comd-react-select__value-container > span{
   margin-right: 10px;
   position: relative;
   top: -4px;
 }
 
-.SelectBox .simple-select_comd-select-multi-value__content__cUSHi {
+
+.SelectBox  .comd-react-select__value-container > span > div > div > span > div {
   margin-right: 10px;
   font-size: 16px;
 }
 
-.SelectBox .button_co-icon-button__6gYFn {
+.SelectBox .comd-react-select__value-container > span > div > div > div > div > button  {
   width: 1.857rem;
   height: 1.857rem;
   line-height: 1.857rem;
@@ -109,11 +110,12 @@
   right: 2px;
   position: absolute;
 }
+
 .SelectBox .comd-react-select__indicators {
-  margin-top: 0;
+    margin-top: 0;
 }
 
-.SelectBox .comd-react-select__indicators > button {
+.SelectBox .comd-react-select__indicators > button{
   position: relative;
   top: -2px;
 }

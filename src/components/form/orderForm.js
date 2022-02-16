@@ -198,7 +198,7 @@ function OrderForm() {
       <h2 className="form-title">CC Library Form</h2>
       <Row>
         <Col>
-          <fieldset>
+          <fieldset className="input">
             <FormGroup controlId="formURL">
               <Form.Text className="text-muted">
                 Dapresy server where this should be implemented
@@ -357,7 +357,7 @@ function OrderForm() {
       <Row>
         <Col>
           <Form.Text className="text-muted">Please select tag</Form.Text>
-          <div className="SelectBox">
+          <div className="SelectBox" id="SelectBox">
             <Select
               id="tag-box"
               value={multipleSelectValue}

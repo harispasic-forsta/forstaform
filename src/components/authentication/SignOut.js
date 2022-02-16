@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Card, Button, Alert } from "react-bootstrap";
-import { useNavigate, Link } from "react-router-dom";
+import { Container, Button, Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import "./SignOut.css";
 
 export default function SignOut() {
   const [error, setError] = useState("");
-  const { currentUser, logout } = useAuth();
+  const { logout } = useAuth();
   let navigate = useNavigate();
 
   async function handleLogout() {
@@ -21,26 +21,19 @@ export default function SignOut() {
   }
 
   return (
-    <>
-      <Card className="signout">
-        <Card.Body>
-          <h2 className="login-body">Profile</h2>
+    <> 
+    <Container className="signout">
           {error && <Alert variant="danger">{error}</Alert>}
-          <strong>Email:</strong> {currentUser?.email}
           <div className="update-logout-btn">
-            <Link to="/update-profile" className="btn btn-primary mt-10">
-              Update Profile
-            </Link>
             <Button
               type="button"
               className="signout-btn"
               onClick={handleLogout}
             >
-              Log Out
+              Sign Out
             </Button>
           </div>
-        </Card.Body>
-      </Card>
+          </Container>
     </>
   );
 }

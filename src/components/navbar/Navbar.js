@@ -11,7 +11,6 @@ import { MenuItems } from "./MenuItems";
 import { NotificationMenuItems } from "./NotificationMenuItems";
 import { useAuth } from "../../contexts/AuthContext";
 import forstaLogo from "../images/forstaLogo.jpg";
-import OutsideClickHandler from 'react-outside-click-handler';
 
 export default function Navbar() {
   const [sidebar, setSidebar] = useState(false);

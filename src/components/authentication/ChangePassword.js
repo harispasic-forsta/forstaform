@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Form, Card, Button, Alert } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import "./ForgotPassword.css";
+
+import "./ChangePassword.css";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const { resetPassword } = useAuth();
+  const { changePassword } = useAuth();
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,21 +20,20 @@ export default function ForgotPassword() {
       setMessage("");
       setError("");
       setLoading(true);
-      await resetPassword(email);
+      await changePassword(email);
       setMessage("Check your inbox for further instructions");
-      navigate("/");
+      navigate("/cc-library");
     } catch  {
       setError("Failed to reset password");
     }
-
     setLoading(false);
   }
 
   return (
     <>
-      <Card className="forgot-password">
+      <Card className="change-password">
         <Card.Body>
-          <h2 className="forgot-password-body">Password Reset</h2>
+          <h2 className="change-password-body">Change Password</h2>
           {error && <Alert variant="danger">{error}</Alert>}
           {message && <Alert variant="success">{message}</Alert>}
           <Form onSubmit={handleSubmit}>
@@ -49,24 +49,14 @@ export default function ForgotPassword() {
                 }}
               />
             </Form.Group>
-            <div className="resetpw-btns">
-              <Button className="reset-btn" type="submit" disabled={loading}>
-                Reset Password
+            <div className="changepw-btns">
+              <Button className="change-btn" type="submit" disabled={loading}>
+                Change Password
               </Button>
             </div>
-
-            <Link to="/" className="login-link">
-              Log In
-            </Link>
           </Form>
         </Card.Body>
       </Card>
-      <div>
-        Need an account?{" "}
-        <Link className="forgotpw-signup-link" to="/signup">
-          Sign Up
-        </Link>
-      </div>
     </>
   );
 }
